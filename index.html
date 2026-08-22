@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#2F5D50" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Trinkgeld" />
+<title>Trinkgeld · Marmotte</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --ink:#2A2724; --pine:#2F5D50; --pineDark:#244a40;
+    --honey:#C8892A; --line:#DED7C6; --soft:#EDE7D8; --muted:#7A7466; --red:#A8452F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding:20px 16px 48px; padding-top:max(20px,env(safe-area-inset-top));
+  }
+  .wrap{max-width:520px; margin:0 auto;}
+  .eyebrow{font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--honey); font-weight:700;}
+  h1{margin:2px 0 18px; font-size:26px; font-weight:800; letter-spacing:-.5px;}
+
+  .tabs{display:flex; gap:4px; background:var(--soft); padding:5px; border-radius:12px; margin-bottom:22px;}
+  .tab{flex:1; padding:11px 4px; border-radius:9px; border:none; font-weight:600; font-size:14px;
+       cursor:pointer; background:transparent; color:var(--muted); transition:.15s;}
+  .tab.on{background:var(--pine); color:var(--paper);}
+
+  label.lbl{display:block; font-size:13px; font-weight:600; color:var(--muted); margin-bottom:8px;}
+  input{font-family:inherit; color:var(--ink);}
+  .txt{width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+       font-size:16px; background:#fff; outline:none;}
+  .row-add{display:flex; gap:8px; margin-bottom:16px;}
+  .iconbtn{padding:0 16px; border-radius:10px; border:none; background:var(--pine); color:var(--paper);
+           cursor:pointer; font-size:22px; line-height:1;}
+
+  .emp{display:flex; align-items:center; justify-content:space-between; background:#fff;
+       border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:8px;}
+  .emp .name{font-size:16px; font-weight:500;}
+  .del{border:none; background:transparent; cursor:pointer; color:var(--muted); font-size:18px; padding:4px 6px;}
+  .empty{color:var(--muted); font-size:15px; text-align:center; padding:24px 0;}
+
+  .deptbox{margin-top:24px; padding-top:20px; border-top:1px solid var(--line);}
+  .cap{font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:10px;}
+  .deptrow{display:flex; gap:8px;}
+  .pct{display:flex; align-items:center; background:#fff; border:1px solid var(--line);
+       border-radius:10px; padding:0 12px; width:96px;}
+  .pct input{width:100%; border:none; font-size:16px; outline:none; text-align:right; background:transparent;}
+  .pct span{color:var(--muted); margin-left:2px;}
+
+  .datebox{margin-bottom:16px;}
+  .tipbox{display:flex; align-items:center; background:#fff; border:1px solid var(--line);
+          border-radius:12px; padding:4px 16px; margin-bottom:20px;}
+  .tipbox .cur{color:var(--muted); font-size:20px; font-weight:600;}
+  .tipbox input{flex:1; border:none; font-size:30px; font-weight:700; padding:12px 10px; outline:none; background:transparent; width:100%;}
+
+  .toggle{width:100%; display:flex; align-items:center; justify-content:space-between;
+          border-radius:12px; padding:14px 16px; cursor:pointer; margin-bottom:20px;
+          font-size:15px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--ink);}
+  .toggle.on{background:var(--pine); color:var(--paper); border-color:var(--pine);}
+  .toggle .state{font-size:13px; opacity:.9; font-weight:500;}
+
+  .subhead{font-size:13px; font-weight:600; color:var(--muted); margin-bottom:10px;}
+  .pick{display:flex; align-items:center; gap:12px; width:100%; border:1px solid var(--line);
+        border-radius:10px; padding:12px 14px; cursor:pointer; text-align:left; background:transparent; margin-bottom:8px;}
+  .pick.on{background:#fff; border-color:var(--pine);}
+  .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--line);
+       display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px; color:#fff;}
+  .pick.on .box{background:var(--pine); border-color:var(--pine);}
+  .pick .pname{font-size:16px; font-weight:500; color:var(--muted); flex:1;}
+  .pick.on .pname{color:var(--ink);}
+  .pick .amt{font-size:14px; font-weight:600; color:var(--pine);}
+
+  .cta{width:100%; padding:16px; border-radius:12px; border:none; background:var(--pine); color:var(--paper);
+       font-size:16px; font-weight:700; cursor:pointer; margin-top:6px;}
+  .cta:disabled{background:var(--line); color:var(--muted); cursor:not-allowed;}
+  .hint{font-size:13px; color:var(--muted); text-align:center; margin-top:10px; line-height:1.5;}
+  .flash{background:#E4EEE9; border:1px solid var(--pine); color:var(--pineDark); border-radius:10px;
+         padding:12px 14px; font-size:14px; margin-bottom:16px;}
+
+  /* Topf */
+  .pot{background:var(--pine); color:var(--paper); border-radius:16px; padding:18px; margin-bottom:20px; text-align:center;}
+  .pot .k{font-size:12px; letter-spacing:1px; text-transform:uppercase; opacity:.7; font-weight:700;}
+  .pot .v{font-size:34px; font-weight:800; margin-top:4px;}
+  .bal{display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line);
+       border-radius:10px; padding:10px 14px; margin-bottom:8px;}
+  .bal.dept{border-color:var(--honey);}
+  .bal .bn{flex:1; font-size:16px; font-weight:500;}
+  .bal .bb{font-size:13px; color:var(--muted); white-space:nowrap;}
+  .bal .bb.neg{color:var(--red);}
+  .bal .pin{display:flex; align-items:center; background:var(--paper); border:1px solid var(--line);
+            border-radius:8px; padding:0 8px; width:104px;}
+  .bal .pin span{font-size:12px; color:var(--muted);}
+  .bal .pin input{width:100%; border:none; background:transparent; text-align:right; font-size:15px; font-weight:600; outline:none; padding:8px 4px;}
+  .bal .dash{width:104px; text-align:right; color:var(--muted); font-size:14px;}
+
+  /* Verlauf */
+  .logitem{background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:8px;}
+  .logitem .lh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .logitem .lt{font-weight:700; font-size:15px;}
+  .logitem .ld{font-size:12px; color:var(--muted);}
+  .logitem .lb{font-size:14px; color:var(--muted); line-height:1.6;}
+  .logitem.payout .lt{color:var(--red);}
+  .logitem .edited{font-size:11px; color:var(--honey); font-weight:600; margin-left:6px;}
+  .actions{display:flex; gap:8px; margin-top:10px;}
+  .abtn{flex:1; padding:9px; border-radius:8px; border:1px solid var(--line); background:transparent;
+        font-weight:600; font-size:13px; cursor:pointer; color:var(--ink);}
+  .abtn.danger{color:var(--red);}
+
+  /* Editor */
+  .editor{border:1px solid var(--pine); border-radius:10px; padding:14px; margin-bottom:8px; background:#fff;}
+  .editor .ecap{font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--pine); font-weight:700; margin-bottom:12px;}
+  .editor .erow{margin-bottom:12px;}
+  .editor .smtxt{width:100%; padding:10px 12px; border-radius:9px; border:1px solid var(--line); font-size:16px; background:var(--paper); outline:none;}
+  .etoggle{width:100%; display:flex; align-items:center; justify-content:space-between; border-radius:9px;
+           padding:11px 14px; cursor:pointer; font-size:14px; font-weight:600; border:1px solid var(--line); background:var(--paper); color:var(--ink);}
+  .etoggle.on{background:var(--pine); color:var(--paper); border-color:var(--pine);}
+  .epreview{font-size:13px; color:var(--muted); margin:10px 0; line-height:1.5;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Marmotte</div>
+  <h1>Trinkgeld</h1>
+
+  <div class="tabs">
+    <button class="tab on" data-v="book">Buchen</button>
+    <button class="tab" data-v="pot">Topf</button>
+    <button class="tab" data-v="team">Team</button>
+    <button class="tab" data-v="log">Verlauf</button>
+  </div>
+
+  <!-- ===== BUCHEN ===== -->
+  <section id="viewBook">
+    <div id="bookFlash"></div>
+    <label class="lbl">Datum</label>
+    <div class="datebox"><input class="txt" type="date" id="bookDate" /></div>
+    <label class="lbl">Trinkgeld des Tages</label>
+    <div class="tipbox"><span class="cur">CHF</span><input id="tip" inputmode="decimal" placeholder="0.00" /></div>
+    <button class="toggle on" id="deptToggle"><span id="deptLabel">Abteilung · 10%</span><span class="state" id="deptState">aktiv</span></button>
+    <div class="subhead">Wer hat gearbeitet?</div>
+    <div id="pickList"></div>
+    <button class="cta" id="bookBtn">Tag buchen</button>
+    <div class="hint" id="bookHint"></div>
+  </section>
+
+  <!-- ===== TOPF ===== -->
+  <section id="viewPot" class="hidden">
+    <div class="pot"><div class="k">Im Topf</div><div class="v" id="potTotal">CHF 0.00</div></div>
+    <div class="subhead">Guthaben · Auszahlbetrag eingeben</div>
+    <div id="balList"></div>
+    <button class="cta" id="payBtn">Auszahlung buchen</button>
+    <div class="hint">Vorschlag = auf ganze Franken abgerundet. Frei editierbar; der Rest bleibt als Guthaben stehen.</div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section id="viewTeam" class="hidden">
+    <div class="row-add"><input class="txt" id="newName" placeholder="Name eingeben" /><button class="iconbtn" id="addBtn">+</button></div>
+    <div id="empList"></div>
+    <div class="deptbox">
+      <div class="cap">Abteilung (fixer Anteil)</div>
+      <div class="deptrow">
+        <input class="txt" id="deptName" />
+        <div class="pct"><input id="deptPct" type="number" min="0" max="100" /><span>%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VERLAUF ===== -->
+  <section id="viewLog" class="hidden"><div id="logList"></div></section>
+</div>
+
+<script>
+"use strict";
+const K_EMP="marmotte_tip_employees", K_DEPT="marmotte_tip_department",
+      K_BAL="marmotte_tip_balances", K_LOG="marmotte_tip_log";
+const DEPT="__dept";
+
+let employees = load(K_EMP, []);
+let dept      = load(K_DEPT, {name:"Abteilung", percent:10});
+let balances  = load(K_BAL, {});
+let logs      = load(K_LOG, []);
+let worked={}, deptOn=true;
+let editing=null; // {ts,date,tipStr,deptOn,checked:{},roster:[{id,name}]}
+
+function load(k,fb){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):fb;}catch(e){return fb;} }
+function save(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+function fmt(r){ return "CHF "+(r/100).toFixed(2); }
+function fr(r){ return (r/100).toFixed(2); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function bal(id){ return balances[id]||0; }
+function toR(str){ return Math.round((parseFloat(String(str).replace(",","."))||0)*100); }
+function todayISO(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function deDate(iso){ const p=String(iso).split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:iso; }
+
+// gemeinsame Aufteilungslogik (exakt, Restrappen an erste Empfänger)
+function splitCredits(tipR, on, roster, isChecked){
+  const ws=roster.filter(m=>isChecked(m.id));
+  const n=ws.length;
+  const deptShare=on?Math.round(tipR*dept.percent/100):0;
+  const remaining=tipR-deptShare;
+  const per=n>0?Math.floor(remaining/n):0;
+  const rest=n>0?remaining-per*n:remaining;
+  const credits=ws.map((w,i)=>({id:w.id,name:w.name,amount:per+(i<rest?1:0)}));
+  return {n,deptShare,credits};
+}
+// alte/neue Buchung in die Guthaben ein-/ausrechnen
+function applyDelta(entry, sign){
+  if(entry.deptOn && entry.deptShare>0) balances[DEPT]=bal(DEPT)+sign*entry.deptShare;
+  entry.credits.forEach(c=> balances[c.id]=bal(c.id)+sign*c.amount);
+}
+
+// ---- Tabs ----
+const views={book:document.getElementById("viewBook"),pot:document.getElementById("viewPot"),
+             team:document.getElementById("viewTeam"),log:document.getElementById("viewLog")};
+document.querySelectorAll(".tab").forEach(t=> t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); t.classList.add("on");
+  Object.values(views).forEach(v=>v.classList.add("hidden"));
+  const v=t.dataset.v; views[v].classList.remove("hidden");
+  if(v==="book"){renderPick(); updateBookBtn();}
+  if(v==="pot") renderPot();
+  if(v==="team") renderEmp();
+  if(v==="log"){ editing=null; renderLog(); }
+});
+
+// ---- Abteilung ----
+const deptNameEl=document.getElementById("deptName"), deptPctEl=document.getElementById("deptPct");
+deptNameEl.value=dept.name; deptPctEl.value=dept.percent;
+deptNameEl.addEventListener("input",()=>{ dept.name=deptNameEl.value; save(K_DEPT,dept); deptLabel(); });
+deptPctEl.addEventListener("input",()=>{ let p=parseFloat(deptPctEl.value); if(isNaN(p))p=0; p=Math.max(0,Math.min(100,p)); dept.percent=p; save(K_DEPT,dept); deptLabel(); });
+function deptLabel(){ document.getElementById("deptLabel").textContent=`${dept.name} · ${dept.percent}%`; }
+
+// ---- Team ----
+const newName=document.getElementById("newName");
+document.getElementById("addBtn").onclick=addEmp;
+newName.addEventListener("keydown",e=>{ if(e.key==="Enter") addEmp(); });
+function addEmp(){ const n=newName.value.trim(); if(!n)return; employees.push({id:Date.now().toString(),name:n}); save(K_EMP,employees); newName.value=""; renderEmp(); }
+function removeEmp(id){
+  if(bal(id)>0 && !confirm("Dieser Mitarbeiter hat noch ein Guthaben von "+fmt(bal(id))+". Trotzdem löschen?")) return;
+  employees=employees.filter(e=>e.id!==id); delete worked[id]; delete balances[id];
+  save(K_EMP,employees); save(K_BAL,balances); renderEmp();
+}
+function renderEmp(){
+  const box=document.getElementById("empList");
+  if(!employees.length){ box.innerHTML='<p class="empty">Noch keine Mitarbeiter. Oben eintragen.</p>'; return; }
+  box.innerHTML=employees.map(e=>`<div class="emp"><span class="name">${esc(e.name)}</span><button class="del" data-id="${e.id}">🗑</button></div>`).join("");
+  box.querySelectorAll(".del").forEach(b=> b.onclick=()=>removeEmp(b.dataset.id));
+}
+
+// ---- Buchen ----
+document.getElementById("bookDate").value=todayISO();
+document.getElementById("tip").addEventListener("input",()=>{ renderPick(); updateBookBtn(); });
+document.getElementById("deptToggle").onclick=()=>{
+  deptOn=!deptOn;
+  document.getElementById("deptToggle").classList.toggle("on",deptOn);
+  document.getElementById("deptState").textContent=deptOn?"aktiv":"aus";
+  renderPick(); updateBookBtn();
+};
+function currentSplit(){ return splitCredits(toR(document.getElementById("tip").value), deptOn, employees, id=>!!worked[id]); }
+function renderPick(){
+  const box=document.getElementById("pickList");
+  if(!employees.length){ box.innerHTML='<p class="empty" style="text-align:left">Noch keine Mitarbeiter. Wechsle zu <b>Team</b>.</p>'; return; }
+  const {credits}=currentSplit(); const cmap={}; credits.forEach(c=>cmap[c.id]=c.amount);
+  box.innerHTML=employees.map(e=>{
+    const on=!!worked[e.id];
+    const amt=(on && cmap[e.id]!=null)?`<span class="amt">+${fr(cmap[e.id])}</span>`:"";
+    return `<button class="pick ${on?'on':''}" data-id="${e.id}"><span class="box">${on?'✓':''}</span><span class="pname">${esc(e.name)}</span>${amt}</button>`;
+  }).join("");
+  box.querySelectorAll(".pick").forEach(b=> b.onclick=()=>{ const id=b.dataset.id; worked[id]=!worked[id]; renderPick(); updateBookBtn(); });
+}
+function updateBookBtn(){
+  const t=toR(document.getElementById("tip").value); const {n,deptShare}=currentSplit();
+  const btn=document.getElementById("bookBtn"), hint=document.getElementById("bookHint");
+  btn.disabled=!(t>0 && n>0);
+  if(t<=0) hint.textContent="Betrag eingeben.";
+  else if(n<=0) hint.textContent="Mindestens eine Person auswählen.";
+  else hint.textContent = deptOn ? `${dept.name}: +${fr(deptShare)} · ${n} Mitarbeiter` : `${n} Mitarbeiter`;
+}
+document.getElementById("bookBtn").onclick=()=>{
+  const t=toR(document.getElementById("tip").value); const {n,deptShare,credits}=currentSplit();
+  if(!(t>0 && n>0)) return;
+  const entry={type:"booking", ts:Date.now(), date:document.getElementById("bookDate").value,
+               tip:t, deptOn:deptOn, deptName:dept.name, deptShare:deptOn?deptShare:0, credits:credits};
+  applyDelta(entry,+1);
+  logs.push(entry); save(K_LOG,logs); save(K_BAL,balances);
+  document.getElementById("tip").value=""; worked={}; renderPick(); updateBookBtn();
+  const f=document.getElementById("bookFlash");
+  f.innerHTML=`<div class="flash">Gebucht: ${fmt(t)} vom ${deDate(entry.date)} verteilt.</div>`;
+  setTimeout(()=>{ f.innerHTML=""; }, 4000);
+};
+
+// ---- Topf ----
+function totalPot(){ let s=0; for(const k in balances) s+=balances[k]; return s; }
+function renderPot(){
+  document.getElementById("potTotal").textContent=fmt(totalPot());
+  const box=document.getElementById("balList"); const rows=[];
+  if(bal(DEPT)!==0) rows.push(balRow(DEPT, dept.name, bal(DEPT), true));
+  employees.forEach(e=> rows.push(balRow(e.id, e.name, bal(e.id), false)));
+  box.innerHTML = rows.length ? rows.join("") : '<p class="empty">Noch keine Guthaben.</p>';
+}
+function balRow(id,name,r,isDept){
+  const suggest=Math.max(0,Math.floor(r/100)*100);
+  const right = r>0
+    ? `<span class="pin"><span>CHF</span><input inputmode="decimal" data-id="${id}" data-max="${r}" value="${(suggest/100).toFixed(2)}" /></span>`
+    : `<span class="dash">—</span>`;
+  return `<div class="bal ${isDept?'dept':''}"><span class="bn">${esc(name)}</span>`+
+         `<span class="bb ${r<0?'neg':''}">Guthaben ${fr(r)}</span>${right}</div>`;
+}
+document.getElementById("payBtn").onclick=()=>{
+  const inputs=document.querySelectorAll("#balList input"); const items=[]; let over=false;
+  inputs.forEach(inp=>{
+    const id=inp.dataset.id, max=parseInt(inp.dataset.max,10);
+    let r=toR(inp.value); if(r<=0) return; if(r>max){ r=max; over=true; }
+    const name = id===DEPT ? dept.name : ((employees.find(e=>e.id===id)||{}).name || "—");
+    items.push({id,name,amount:r});
+  });
+  if(!items.length){ alert("Keine Auszahlbeträge eingegeben."); return; }
+  items.forEach(it=> balances[it.id]=bal(it.id)-it.amount);
+  logs.push({type:"payout", ts:Date.now(), date:todayISO(), items});
+  save(K_BAL,balances); save(K_LOG,logs); renderPot();
+  alert(over ? "Auszahlung gebucht. Einzelne Beträge wurden aufs Guthaben begrenzt." : "Auszahlung gebucht.");
+};
+
+// ---- Verlauf ----
+function renderLog(){
+  const box=document.getElementById("logList");
+  if(!logs.length){ box.innerHTML='<p class="empty">Noch keine Einträge.</p>'; return; }
+  const items=logs.slice().reverse();
+  box.innerHTML=items.map((l,idx)=>{
+    const isLast=idx===0;
+    if(editing && l.type==="booking" && l.ts===editing.ts) return `<div id="editorMount"></div>`;
+    if(l.type==="booking"){
+      const lines=[];
+      if(l.deptOn && l.deptShare>0) lines.push(`${esc(l.deptName)}: +${fr(l.deptShare)}`);
+      l.credits.forEach(c=> lines.push(`${esc(c.name)}: +${fr(c.amount)}`));
+      return `<div class="logitem booking"><div class="lh"><span class="lt">${fmt(l.tip)} gebucht${l.edited?'<span class="edited">bearbeitet</span>':''}</span><span class="ld">${deDate(l.date)}</span></div>`+
+             `<div class="lb">${lines.join(" · ")}</div>`+
+             `<div class="actions"><button class="abtn" data-edit="${l.ts}">Bearbeiten</button>`+
+             (isLast?`<button class="abtn danger" data-undo="${l.ts}">Löschen</button>`:"")+`</div></div>`;
+    } else {
+      const total=l.items.reduce((s,i)=>s+i.amount,0);
+      const lines=l.items.map(i=>`${esc(i.name)}: −${fr(i.amount)}`);
+      return `<div class="logitem payout"><div class="lh"><span class="lt">Auszahlung −${fr(total)}</span><span class="ld">${deDate(l.date)}</span></div>`+
+             `<div class="lb">${lines.join(" · ")}</div>`+
+             (isLast?`<div class="actions"><button class="abtn danger" data-undo="${l.ts}">Löschen</button></div>`:"")+`</div>`;
+    }
+  }).join("");
+  box.querySelectorAll("[data-edit]").forEach(b=> b.onclick=()=>openEdit(parseInt(b.dataset.edit,10)));
+  box.querySelectorAll("[data-undo]").forEach(b=> b.onclick=()=>undoEntry(parseInt(b.dataset.undo,10)));
+  if(editing) mountEditor();
+}
+function undoEntry(ts){
+  const i=logs.findIndex(l=>l.ts===ts); if(i<0) return;
+  const l=logs[i];
+  if(!confirm("Diesen Eintrag löschen?")) return;
+  if(l.type==="booking") applyDelta(l,-1); else l.items.forEach(it=> balances[it.id]=bal(it.id)+it.amount);
+  logs.splice(i,1); save(K_LOG,logs); save(K_BAL,balances); renderLog();
+}
+
+// ---- Buchung bearbeiten ----
+function openEdit(ts){
+  const l=logs.find(x=>x.ts===ts); if(!l||l.type!=="booking") return;
+  const roster=employees.slice();
+  l.credits.forEach(c=>{ if(!roster.find(e=>e.id===c.id)) roster.push({id:c.id,name:c.name}); });
+  editing={ ts, date:l.date, tipStr:(l.tip/100).toFixed(2), deptOn:l.deptOn, checked:{}, roster };
+  l.credits.forEach(c=> editing.checked[c.id]=true);
+  renderLog();
+}
+function mountEditor(){
+  const m=document.getElementById("editorMount"); if(!m) return;
+  m.innerHTML=
+    `<div class="editor">
+       <div class="ecap">Buchung bearbeiten</div>
+       <div class="erow"><input class="smtxt" type="date" id="eDate" value="${editing.date}"></div>
+       <div class="erow"><input class="smtxt" id="eTip" inputmode="decimal" value="${editing.tipStr}" placeholder="Betrag CHF"></div>
+       <div class="erow"><button class="etoggle ${editing.deptOn?'on':''}" id="eDept">${esc(dept.name)} · ${dept.percent}%<span>${editing.deptOn?'aktiv':'aus'}</span></button></div>
+       <div id="ePicks"></div>
+       <div class="epreview" id="ePreview"></div>
+       <div class="actions">
+         <button class="abtn" id="eCancel">Abbrechen</button>
+         <button class="cta" id="eSave" style="margin-top:0">Speichern</button>
+       </div>
+     </div>`;
+  document.getElementById("eDate").onchange=e=>{ editing.date=e.target.value; };
+  document.getElementById("eTip").oninput=e=>{ editing.tipStr=e.target.value; renderEditDynamic(); };
+  document.getElementById("eDept").onclick=()=>{ editing.deptOn=!editing.deptOn; document.getElementById("eDept").classList.toggle("on",editing.deptOn); document.getElementById("eDept").querySelector("span").textContent=editing.deptOn?'aktiv':'aus'; renderEditDynamic(); };
+  document.getElementById("eCancel").onclick=()=>{ editing=null; renderLog(); };
+  document.getElementById("eSave").onclick=saveEdit;
+  renderEditDynamic();
+}
+function editSplit(){ return splitCredits(toR(editing.tipStr), editing.deptOn, editing.roster, id=>!!editing.checked[id]); }
+function renderEditDynamic(){
+  const {n,deptShare,credits}=editSplit(); const cmap={}; credits.forEach(c=>cmap[c.id]=c.amount);
+  document.getElementById("ePicks").innerHTML=editing.roster.map(e=>{
+    const on=!!editing.checked[e.id];
+    const amt=(on&&cmap[e.id]!=null)?`<span class="amt">+${fr(cmap[e.id])}</span>`:"";
+    return `<button class="pick ${on?'on':''}" data-id="${e.id}"><span class="box">${on?'✓':''}</span><span class="pname">${esc(e.name)}</span>${amt}</button>`;
+  }).join("");
+  document.querySelectorAll("#ePicks .pick").forEach(b=> b.onclick=()=>{ const id=b.dataset.id; editing.checked[id]=!editing.checked[id]; renderEditDynamic(); });
+  const t=toR(editing.tipStr);
+  let msg;
+  if(t<=0) msg="Betrag eingeben.";
+  else if(n<=0) msg="Mindestens eine Person auswählen.";
+  else msg = (editing.deptOn?`${dept.name}: +${fr(deptShare)} · `:"")+`${n} Mitarbeiter · Total ${fmt(t)}`;
+  document.getElementById("ePreview").textContent=msg;
+  document.getElementById("eSave").disabled=!(t>0 && n>0);
+}
+function saveEdit(){
+  const t=toR(editing.tipStr); const {n,deptShare,credits}=editSplit();
+  if(!(t>0 && n>0)){ alert("Betrag und mindestens eine Person nötig."); return; }
+  const i=logs.findIndex(l=>l.ts===editing.ts); if(i<0){ editing=null; renderLog(); return; }
+  applyDelta(logs[i],-1); // alte Wirkung entfernen
+  const nu={type:"booking", ts:editing.ts, date:editing.date, tip:t, deptOn:editing.deptOn,
+            deptName:dept.name, deptShare:editing.deptOn?deptShare:0, credits, edited:true};
+  applyDelta(nu,+1);      // neue Wirkung anwenden
+  logs[i]=nu; save(K_LOG,logs); save(K_BAL,balances);
+  editing=null; renderLog();
+}
+
+// ---- Init ----
+deptLabel(); renderPick(); updateBookBtn();
+</script>
+</body>
+</html>
