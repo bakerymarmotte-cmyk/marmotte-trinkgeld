@@ -1,454 +1,230 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Trinkgeld · Marmotte</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marmotte Trinkgeld – Login</title>
 <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
 <link rel="apple-touch-icon" sizes="120x120" href="assets/apple-touch-icon-120.png">
 <link rel="apple-touch-icon" sizes="152x152" href="assets/apple-touch-icon-152.png">
 <link rel="apple-touch-icon" sizes="167x167" href="assets/apple-touch-icon-167.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
+<meta name="msapplication-config" content="browserconfig.xml">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f5f4f2" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Trinkgeld" />
+<meta name="theme-color" content="#f5f4f2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Marmotte">
 <link rel="stylesheet" href="https://bakerymarmotte-cmyk.github.io/marmotte-design/marmotte.css">
+<link rel="stylesheet" href="style.css">
 <script src="https://bakerymarmotte-cmyk.github.io/marmotte-design/theme.js"></script>
 <script src="https://bakerymarmotte-cmyk.github.io/marmotte-design/icons.js" defer></script>
 <style>
-  /* Trinkgeld – app-spezifisch. Farben, Schrift und Hell/Dunkel aus marmotte.css */
-  *{box-sizing:border-box;}
-  html,body{margin:0;}
-  body{padding-bottom:calc(48px + env(safe-area-inset-bottom));}
-  button{font-family:inherit; cursor:pointer;}
-  .topbar{padding-top:max(20px, env(safe-area-inset-top));}
-  .wrap{max-width:520px; margin:0 auto; padding:0 16px;}
-  .mono{font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
-
-  /* Navigation */
-  .tabs{position:sticky; top:0; z-index:20; display:flex; gap:4px; padding:4px; margin:4px 0 20px;
-        background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-lg); box-shadow:var(--m-shadow);}
-  .tab{flex:1; min-width:0; border:none; background:none; color:var(--m-muted); border-radius:var(--m-radius-md);
-       display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 2px 7px; font-size:11px; font-weight:500;}
-  .tab.on{background:var(--m-chip-bg); color:var(--m-chip-fg);}
-
-  label.lbl{display:block; font-size:12px; color:var(--m-muted); margin-bottom:4px;}
-  input{font-family:inherit; color:var(--m-text);}
-  .txt{width:100%; padding:11px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border);
-       font-size:16px; background:var(--m-surface-2); outline:none;}
-  .txt:focus, .tipbox:focus-within, .pct:focus-within{border-color:var(--m-accent); box-shadow:0 0 0 3px var(--m-chip-bg);}
-  .row-add{display:flex; gap:8px; margin-bottom:16px;}
-  .iconbtn{width:46px; flex-shrink:0; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
-           display:flex; align-items:center; justify-content:center;}
-
-  .emp{display:flex; align-items:center; justify-content:space-between; background:var(--m-card);
-       border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
-  .emp .name{font-size:15px; font-weight:500;}
-  .del{border:none; background:transparent; color:var(--m-muted); padding:4px 6px; display:flex;}
-  .del:hover{color:var(--m-danger);}
-  .empty{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
-
-  .deptbox{margin-top:24px; padding-top:20px; border-top:1px solid var(--m-border);}
-  .cap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-faint); font-weight:500; margin-bottom:10px;}
-  .deptrow{display:flex; gap:8px;}
-  .pct{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-sm); padding:0 12px; width:96px;}
-  .pct input{width:100%; border:none; font-size:16px; outline:none; text-align:right; background:transparent;}
-  .pct span{color:var(--m-muted); margin-left:2px;}
-
-  .datebox{margin-bottom:14px;}
-  .tipbox{display:flex; align-items:center; background:var(--m-card); border:1px solid var(--m-border);
-          border-radius:var(--m-radius-lg); padding:4px 16px; margin-bottom:16px;}
-  .tipbox .cur{color:var(--m-muted); font-size:18px; font-weight:500;}
-  .tipbox input{flex:1; border:none; font-size:30px; font-weight:700; padding:12px 10px; outline:none; background:transparent; width:100%;
-                font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
-
-  .toggle{width:100%; display:flex; align-items:center; justify-content:space-between;
-          border-radius:var(--m-radius-md); padding:13px 16px; margin-bottom:20px;
-          font-size:15px; font-weight:600; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-text);}
-  .toggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
-  .toggle .state{font-size:13px; font-weight:500;}
-
-  .subhead{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500; color:var(--m-faint); margin-bottom:10px;}
-  .pick{display:flex; align-items:center; gap:12px; width:100%; border:1px solid var(--m-border);
-        border-radius:var(--m-radius-md); padding:12px 14px; text-align:left; background:var(--m-card-soft); margin-bottom:8px; color:var(--m-text);}
-  .pick.on{background:var(--m-card); border-color:var(--m-accent);}
-  .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--m-border);
-       display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--m-accent-fg);}
-  .pick.on .box{background:var(--m-accent); border-color:var(--m-accent);}
-  .pick .pname{font-size:15px; font-weight:500; color:var(--m-muted); flex:1;}
-  .pick.on .pname{color:var(--m-text);}
-  .pick .amt{font-size:14px; font-weight:600; color:var(--m-success); font-family:var(--m-font-mono);}
-
-  .cta{width:100%; padding:14px; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
-       font-size:15px; font-weight:600; margin-top:6px;}
-  .cta:disabled{background:var(--m-card-soft); color:var(--m-faint); border:1px solid var(--m-border); cursor:not-allowed;}
-  .hint{font-size:13px; color:var(--m-muted); text-align:center; margin-top:10px; line-height:1.5;}
-  .flash{background:var(--m-success-bg); border:1px solid var(--m-success); color:var(--m-success); border-radius:var(--m-radius-md);
-         padding:12px 14px; font-size:14px; margin-bottom:16px;}
-
-  /* Topf */
-  .pot{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-lg); padding:18px; margin-bottom:20px; text-align:center;}
-  .pot .k{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500;}
-  .pot .v{font-size:32px; font-weight:700; margin-top:4px; font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
-  .bal{display:flex; align-items:center; gap:12px; background:var(--m-card); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-md); padding:10px 14px; margin-bottom:8px;}
-  .bal.dept{border-color:var(--m-t-amber-fg);}
-  .bal .bn{flex:1; font-size:15px; font-weight:500; min-width:0;}
-  .bal .bb{font-size:12.5px; color:var(--m-muted); white-space:nowrap;}
-  .bal .bb.neg{color:var(--m-danger);}
-  .bal .pin{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
-            border-radius:var(--m-radius-sm); padding:0 8px; width:104px;}
-  .bal .pin span{font-size:12px; color:var(--m-muted);}
-  .bal .pin input{width:100%; border:none; background:transparent; text-align:right; font-size:15px; font-weight:600; outline:none; padding:8px 4px;
-                  font-family:var(--m-font-mono);}
-  .bal .dash{width:104px; text-align:right; color:var(--m-faint); font-size:14px;}
-
-  /* Verlauf */
-  .logitem{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
-  .logitem .lh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; gap:8px;}
-  .logitem .lt{font-weight:600; font-size:15px;}
-  .logitem .ld{font-size:12px; color:var(--m-muted); white-space:nowrap;}
-  .logitem .lb{font-size:13.5px; color:var(--m-muted); line-height:1.6;}
-  .logitem.payout .lt{color:var(--m-danger);}
-  .logitem .edited{font-size:11px; color:var(--m-t-amber-fg); font-weight:600; margin-left:6px;}
-  .actions{display:flex; gap:8px; margin-top:10px;}
-  .abtn{flex:1; padding:9px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); background:var(--m-card);
-        font-weight:600; font-size:13px; color:var(--m-text);}
-  .abtn.danger{color:var(--m-danger);}
-
-  /* Bearbeiten */
-  .editor{border:1px solid var(--m-accent); border-radius:var(--m-radius-md); padding:14px; margin-bottom:8px; background:var(--m-card);}
-  .editor .ecap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-accent-text); font-weight:600; margin-bottom:12px;}
-  .editor .erow{margin-bottom:12px;}
-  .editor .smtxt{width:100%; padding:10px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); font-size:16px; background:var(--m-surface-2); outline:none;}
-  .etoggle{width:100%; display:flex; align-items:center; justify-content:space-between; border-radius:var(--m-radius-sm);
-           padding:11px 14px; font-size:14px; font-weight:600; border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-text);}
-  .etoggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
-  .epreview{font-size:13px; color:var(--m-muted); margin:10px 0; line-height:1.5;}
-  .hidden{display:none;}
+  .login-wrap { width: 100%; max-width: 384px; }
+  .login-card { padding: 24px 20px 20px; text-align: center; }
+  .login-card h1 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
+  .login-card .sub { color: var(--m-muted); font-size: 14px; margin: 0 0 20px; }
+  form { text-align: left; }
+  .forgot-link {
+    display: block; width: 100%; margin-top: 12px; padding: 6px;
+    text-align: center; font: inherit; font-size: 13.5px; color: var(--m-muted);
+    background: none; border: none; cursor: pointer; text-decoration: underline;
+  }
+  .forgot-link:hover { color: var(--m-accent-text); }
+  #forgot-panel { display: none; text-align: left; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--m-border); }
+  #forgot-panel.open { display: block; }
+  #forgot-panel p.sub { color: var(--m-muted); font-size: 13px; margin: 0 0 14px; }
+  .success-text { color: var(--m-success); font-size: 13.5px; margin: 0 0 12px; }
+  .success-text:empty { display: none; }
+  .footer-note { display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--m-faint); font-size: 12px; margin-top: 16px; }
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-logo"><i data-icon="croissant"></i></div>
-    <div>
-      <div class="brand-name">Marmotte</div>
+
+<div class="centered-screen">
+  <div class="login-wrap">
+    <div class="theme-row"><button class="m-theme-btn" data-theme-toggle aria-label="Hell/Dunkel umschalten"></button></div>
+    <div class="brand-col">
+      <div class="brand-logo"><i data-icon="croissant" data-size="30"></i></div>
+      <div class="brand-title">Marmotte</div>
       <div class="brand-sub">Trinkgeld</div>
     </div>
-  </div>
-  <div class="who">
-    <button class="m-theme-btn" data-theme-toggle aria-label="Hell/Dunkel umschalten"></button>
-  </div>
-</div>
-<div class="wrap">
 
-  <div class="tabs">
-    <button class="tab on" data-v="book"><i data-icon="hand-coins"></i>Buchen</button>
-    <button class="tab" data-v="pot"><i data-icon="piggy-bank"></i>Topf</button>
-    <button class="tab" data-v="team"><i data-icon="users"></i>Team</button>
-    <button class="tab" data-v="log"><i data-icon="history"></i>Verlauf</button>
-  </div>
-  <!-- ===== BUCHEN ===== -->
-  <section id="viewBook">
-    <div id="bookFlash"></div>
-    <label class="lbl">Datum</label>
-    <div class="datebox"><input class="txt" type="date" id="bookDate" /></div>
-    <label class="lbl">Trinkgeld des Tages</label>
-    <div class="tipbox"><span class="cur">CHF</span><input id="tip" inputmode="decimal" placeholder="0.00" /></div>
-    <button class="toggle on" id="deptToggle"><span id="deptLabel">Abteilung · 10%</span><span class="state" id="deptState">aktiv</span></button>
-    <div class="subhead">Wer hat gearbeitet?</div>
-    <div id="pickList"></div>
-    <button class="cta" id="bookBtn">Tag buchen</button>
-    <div class="hint" id="bookHint"></div>
-  </section>
+    <div class="card login-card">
+      <h1>Anmelden</h1>
+      <p class="sub">Melde dich mit deinen Zugangsdaten an.</p>
 
-  <!-- ===== TOPF ===== -->
-  <section id="viewPot" class="hidden">
-    <div class="pot"><div class="k">Im Topf</div><div class="v" id="potTotal">CHF 0.00</div></div>
-    <div class="subhead">Guthaben · Auszahlbetrag eingeben</div>
-    <div id="balList"></div>
-    <button class="cta" id="payBtn">Auszahlung buchen</button>
-    <div class="hint">Vorschlag = auf ganze Franken abgerundet. Frei editierbar; der Rest bleibt als Guthaben stehen.</div>
-  </section>
+      <form id="login-form">
+        <div class="field">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" name="email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Passwort</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
 
-  <!-- ===== TEAM ===== -->
-  <section id="viewTeam" class="hidden">
-    <div class="row-add"><input class="txt" id="newName" placeholder="Name eingeben" /><button class="iconbtn" id="addBtn" aria-label="Hinzufügen"><i data-icon="plus"></i></button></div>
-    <div id="empList"></div>
-    <div class="deptbox">
-      <div class="cap">Abteilung (fixer Anteil)</div>
-      <div class="deptrow">
-        <input class="txt" id="deptName" />
-        <div class="pct"><input id="deptPct" type="number" min="0" max="100" /><span>%</span></div>
+        <div class="error-text" id="error-text"></div>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">
+          Einloggen
+        </button>
+      </form>
+
+      <button type="button" class="forgot-link" id="forgot-toggle">Passwort vergessen?</button>
+
+      <div id="forgot-panel">
+        <p class="sub">Gib deine E-Mail-Adresse ein. Wir senden dir einen Link zum Zurücksetzen deines Passworts.</p>
+        <form id="forgot-form">
+          <div class="field">
+            <label for="forgot-email">E-Mail</label>
+            <input type="email" id="forgot-email" required autocomplete="username">
+          </div>
+          <div class="error-text" id="forgot-error"></div>
+          <div class="success-text" id="forgot-success"></div>
+          <button type="submit" class="btn btn-secondary" id="forgot-submit-btn" style="width:100%;">
+            Link senden
+          </button>
+        </form>
       </div>
     </div>
-  </section>
-
-  <!-- ===== VERLAUF ===== -->
-  <section id="viewLog" class="hidden"><div id="logList"></div></section>
+  </div>
 </div>
 
-<script>
-"use strict";
-const K_EMP="marmotte_tip_employees", K_DEPT="marmotte_tip_department",
-      K_BAL="marmotte_tip_balances", K_LOG="marmotte_tip_log";
-const DEPT="__dept";
+<script type="module">
+  import { auth, db } from "./firebase-config.js";
+  import { signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-let employees = load(K_EMP, []);
-let dept      = load(K_DEPT, {name:"Abteilung", percent:10});
-let balances  = load(K_BAL, {});
-let logs      = load(K_LOG, []);
-let worked={}, deptOn=true;
-let editing=null; // {ts,date,tipStr,deptOn,checked:{},roster:[{id,name}]}
+  const form = document.getElementById("login-form");
+  const errorText = document.getElementById("error-text");
+  const submitBtn = document.getElementById("submit-btn");
 
-function load(k,fb){ try{const v=localStorage.getItem(k); return v?JSON.parse(v):fb;}catch(e){return fb;} }
-function save(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
-function fmt(r){ return "CHF "+(r/100).toFixed(2); }
-function fr(r){ return (r/100).toFixed(2); }
-function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-function bal(id){ return balances[id]||0; }
-function toR(str){ return Math.round((parseFloat(String(str).replace(",","."))||0)*100); }
-function todayISO(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function deDate(iso){ const p=String(iso).split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:iso; }
+  const messages = {
+    "auth/invalid-email": "Diese E-Mail-Adresse ist ungültig.",
+    "auth/user-disabled": "Dieses Konto wurde deaktiviert.",
+    "auth/user-not-found": "Kein Konto mit dieser E-Mail-Adresse gefunden.",
+    "auth/wrong-password": "Falsches Passwort.",
+    "auth/invalid-credential": "E-Mail oder Passwort ist falsch.",
+    "auth/too-many-requests": "Zu viele Versuche. Bitte kurz warten und erneut versuchen.",
+  };
 
-// gemeinsame Aufteilungslogik (exakt, Restrappen an erste Empfänger)
-function splitCredits(tipR, on, roster, isChecked){
-  const ws=roster.filter(m=>isChecked(m.id));
-  const n=ws.length;
-  const deptShare=on?Math.round(tipR*dept.percent/100):0;
-  const remaining=tipR-deptShare;
-  const per=n>0?Math.floor(remaining/n):0;
-  const rest=n>0?remaining-per*n:remaining;
-  const credits=ws.map((w,i)=>({id:w.id,name:w.name,amount:per+(i<rest?1:0)}));
-  return {n,deptShare,credits};
-}
-// alte/neue Buchung in die Guthaben ein-/ausrechnen
-function applyDelta(entry, sign){
-  if(entry.deptOn && entry.deptShare>0) balances[DEPT]=bal(DEPT)+sign*entry.deptShare;
-  entry.credits.forEach(c=> balances[c.id]=bal(c.id)+sign*c.amount);
-}
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorText.textContent = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Wird geprüft …";
 
-// ---- Tabs ----
-const views={book:document.getElementById("viewBook"),pot:document.getElementById("viewPot"),
-             team:document.getElementById("viewTeam"),log:document.getElementById("viewLog")};
-document.querySelectorAll(".tab").forEach(t=> t.onclick=()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); t.classList.add("on");
-  Object.values(views).forEach(v=>v.classList.add("hidden"));
-  const v=t.dataset.v; views[v].classList.remove("hidden");
-  if(v==="book"){renderPick(); updateBookBtn();}
-  if(v==="pot") renderPot();
-  if(v==="team") renderEmp();
-  if(v==="log"){ editing=null; renderLog(); }
-});
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-// ---- Abteilung ----
-const deptNameEl=document.getElementById("deptName"), deptPctEl=document.getElementById("deptPct");
-deptNameEl.value=dept.name; deptPctEl.value=dept.percent;
-deptNameEl.addEventListener("input",()=>{ dept.name=deptNameEl.value; save(K_DEPT,dept); deptLabel(); });
-deptPctEl.addEventListener("input",()=>{ let p=parseFloat(deptPctEl.value); if(isNaN(p))p=0; p=Math.max(0,Math.min(100,p)); dept.percent=p; save(K_DEPT,dept); deptLabel(); });
-function deptLabel(){ document.getElementById("deptLabel").textContent=`${dept.name} · ${dept.percent}%`; }
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const uid = cred.user.uid;
 
-// ---- Team ----
-const newName=document.getElementById("newName");
-document.getElementById("addBtn").onclick=addEmp;
-newName.addEventListener("keydown",e=>{ if(e.key==="Enter") addEmp(); });
-function addEmp(){ const n=newName.value.trim(); if(!n)return; employees.push({id:Date.now().toString(),name:n}); save(K_EMP,employees); newName.value=""; renderEmp(); }
-function removeEmp(id){
-  if(bal(id)>0 && !confirm("Dieser Mitarbeiter hat noch ein Guthaben von "+fmt(bal(id))+". Trotzdem löschen?")) return;
-  employees=employees.filter(e=>e.id!==id); delete worked[id]; delete balances[id];
-  save(K_EMP,employees); save(K_BAL,balances); renderEmp();
-}
-function renderEmp(){
-  const box=document.getElementById("empList");
-  if(!employees.length){ box.innerHTML='<p class="empty">Noch keine Mitarbeiter. Oben eintragen.</p>'; return; }
-  box.innerHTML=employees.map(e=>`<div class="emp"><span class="name">${esc(e.name)}</span><button class="del" data-id="${e.id}" aria-label="Löschen"><i data-icon="trash-2" data-size="17"></i></button></div>`).join("");
-  box.querySelectorAll(".del").forEach(b=> b.onclick=()=>removeEmp(b.dataset.id));
-}
+      // Rolle des Nutzers aus Firestore laden (Sammlung "users", Dokument-ID = uid)
+      const userDoc = await getDoc(doc(db, "users", uid));
 
-// ---- Buchen ----
-document.getElementById("bookDate").value=todayISO();
-document.getElementById("tip").addEventListener("input",()=>{ renderPick(); updateBookBtn(); });
-document.getElementById("deptToggle").onclick=()=>{
-  deptOn=!deptOn;
-  document.getElementById("deptToggle").classList.toggle("on",deptOn);
-  document.getElementById("deptState").textContent=deptOn?"aktiv":"aus";
-  renderPick(); updateBookBtn();
-};
-function currentSplit(){ return splitCredits(toR(document.getElementById("tip").value), deptOn, employees, id=>!!worked[id]); }
-function renderPick(){
-  const box=document.getElementById("pickList");
-  if(!employees.length){ box.innerHTML='<p class="empty" style="text-align:left">Noch keine Mitarbeiter. Wechsle zu <b>Team</b>.</p>'; return; }
-  const {credits}=currentSplit(); const cmap={}; credits.forEach(c=>cmap[c.id]=c.amount);
-  box.innerHTML=employees.map(e=>{
-    const on=!!worked[e.id];
-    const amt=(on && cmap[e.id]!=null)?`<span class="amt">+${fr(cmap[e.id])}</span>`:"";
-    return `<button class="pick ${on?'on':''}" data-id="${e.id}"><span class="box">${on?'<i data-icon="check" data-size="14"></i>':''}</span><span class="pname">${esc(e.name)}</span>${amt}</button>`;
-  }).join("");
-  box.querySelectorAll(".pick").forEach(b=> b.onclick=()=>{ const id=b.dataset.id; worked[id]=!worked[id]; renderPick(); updateBookBtn(); });
-}
-function updateBookBtn(){
-  const t=toR(document.getElementById("tip").value); const {n,deptShare}=currentSplit();
-  const btn=document.getElementById("bookBtn"), hint=document.getElementById("bookHint");
-  btn.disabled=!(t>0 && n>0);
-  if(t<=0) hint.textContent="Betrag eingeben.";
-  else if(n<=0) hint.textContent="Mindestens eine Person auswählen.";
-  else hint.textContent = deptOn ? `${dept.name}: +${fr(deptShare)} · ${n} Mitarbeiter` : `${n} Mitarbeiter`;
-}
-document.getElementById("bookBtn").onclick=()=>{
-  const t=toR(document.getElementById("tip").value); const {n,deptShare,credits}=currentSplit();
-  if(!(t>0 && n>0)) return;
-  const entry={type:"booking", ts:Date.now(), date:document.getElementById("bookDate").value,
-               tip:t, deptOn:deptOn, deptName:dept.name, deptShare:deptOn?deptShare:0, credits:credits};
-  applyDelta(entry,+1);
-  logs.push(entry); save(K_LOG,logs); save(K_BAL,balances);
-  document.getElementById("tip").value=""; worked={}; renderPick(); updateBookBtn();
-  const f=document.getElementById("bookFlash");
-  f.innerHTML=`<div class="flash">Gebucht: ${fmt(t)} vom ${deDate(entry.date)} verteilt.</div>`;
-  setTimeout(()=>{ f.innerHTML=""; }, 4000);
-};
+      if (!userDoc.exists()) {
+        errorText.textContent = "Dieses Konto ist noch nicht vollständig eingerichtet. Bitte an den Admin wenden.";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Einloggen";
+        return;
+      }
 
-// ---- Topf ----
-function totalPot(){ let s=0; for(const k in balances) s+=balances[k]; return s; }
-function renderPot(){
-  document.getElementById("potTotal").textContent=fmt(totalPot());
-  const box=document.getElementById("balList"); const rows=[];
-  if(bal(DEPT)!==0) rows.push(balRow(DEPT, dept.name, bal(DEPT), true));
-  employees.forEach(e=> rows.push(balRow(e.id, e.name, bal(e.id), false)));
-  box.innerHTML = rows.length ? rows.join("") : '<p class="empty">Noch keine Guthaben.</p>';
-}
-function balRow(id,name,r,isDept){
-  const suggest=Math.max(0,Math.floor(r/100)*100);
-  const right = r>0
-    ? `<span class="pin"><span>CHF</span><input inputmode="decimal" data-id="${id}" data-max="${r}" value="${(suggest/100).toFixed(2)}" /></span>`
-    : `<span class="dash">—</span>`;
-  return `<div class="bal ${isDept?'dept':''}"><span class="bn">${esc(name)}</span>`+
-         `<span class="bb ${r<0?'neg':''}">Guthaben ${fr(r)}</span>${right}</div>`;
-}
-document.getElementById("payBtn").onclick=()=>{
-  const inputs=document.querySelectorAll("#balList input"); const items=[]; let over=false;
-  inputs.forEach(inp=>{
-    const id=inp.dataset.id, max=parseInt(inp.dataset.max,10);
-    let r=toR(inp.value); if(r<=0) return; if(r>max){ r=max; over=true; }
-    const name = id===DEPT ? dept.name : ((employees.find(e=>e.id===id)||{}).name || "—");
-    items.push({id,name,amount:r});
-  });
-  if(!items.length){ alert("Keine Auszahlbeträge eingegeben."); return; }
-  items.forEach(it=> balances[it.id]=bal(it.id)-it.amount);
-  logs.push({type:"payout", ts:Date.now(), date:todayISO(), items});
-  save(K_BAL,balances); save(K_LOG,logs); renderPot();
-  alert(over ? "Auszahlung gebucht. Einzelne Beträge wurden aufs Guthaben begrenzt." : "Auszahlung gebucht.");
-};
+      const userData = userDoc.data();
 
-// ---- Verlauf ----
-function renderLog(){
-  const box=document.getElementById("logList");
-  if(!logs.length){ box.innerHTML='<p class="empty">Noch keine Einträge.</p>'; return; }
-  const items=logs.slice().reverse();
-  box.innerHTML=items.map((l,idx)=>{
-    const isLast=idx===0;
-    if(editing && l.type==="booking" && l.ts===editing.ts) return `<div id="editorMount"></div>`;
-    if(l.type==="booking"){
-      const lines=[];
-      if(l.deptOn && l.deptShare>0) lines.push(`${esc(l.deptName)}: +${fr(l.deptShare)}`);
-      l.credits.forEach(c=> lines.push(`${esc(c.name)}: +${fr(c.amount)}`));
-      return `<div class="logitem booking"><div class="lh"><span class="lt">${fmt(l.tip)} gebucht${l.edited?'<span class="edited">bearbeitet</span>':''}</span><span class="ld">${deDate(l.date)}</span></div>`+
-             `<div class="lb">${lines.join(" · ")}</div>`+
-             `<div class="actions"><button class="abtn" data-edit="${l.ts}">Bearbeiten</button>`+
-             (isLast?`<button class="abtn danger" data-undo="${l.ts}">Löschen</button>`:"")+`</div></div>`;
-    } else {
-      const total=l.items.reduce((s,i)=>s+i.amount,0);
-      const lines=l.items.map(i=>`${esc(i.name)}: −${fr(i.amount)}`);
-      return `<div class="logitem payout"><div class="lh"><span class="lt">Auszahlung −${fr(total)}</span><span class="ld">${deDate(l.date)}</span></div>`+
-             `<div class="lb">${lines.join(" · ")}</div>`+
-             (isLast?`<div class="actions"><button class="abtn danger" data-undo="${l.ts}">Löschen</button></div>`:"")+`</div>`;
+      if (userData.active === false) {
+        await signOut(auth);
+        errorText.textContent = "Dieses Konto wurde deaktiviert. Bitte wende dich an die Leitung oder den Admin.";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Einloggen";
+        return;
+      }
+
+      // Rolle merken, damit die nächste Seite weiss, welchen Bereich sie zeigen soll
+      sessionStorage.setItem("marmotte_role", userData.role || "mitarbeiter");
+      sessionStorage.setItem("marmotte_name", userData.name || "");
+
+      if (userData.mustChangePassword) {
+        window.location.href = "change-password.html";
+        return;
+      }
+
+      window.location.href = "app.html";
+
+    } catch (err) {
+      console.error(err);
+      errorText.textContent = messages[err.code] || "Anmeldung fehlgeschlagen. Bitte erneut versuchen.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Einloggen";
     }
-  }).join("");
-  box.querySelectorAll("[data-edit]").forEach(b=> b.onclick=()=>openEdit(parseInt(b.dataset.edit,10)));
-  box.querySelectorAll("[data-undo]").forEach(b=> b.onclick=()=>undoEntry(parseInt(b.dataset.undo,10)));
-  if(editing) mountEditor();
-}
-function undoEntry(ts){
-  const i=logs.findIndex(l=>l.ts===ts); if(i<0) return;
-  const l=logs[i];
-  if(!confirm("Diesen Eintrag löschen?")) return;
-  if(l.type==="booking") applyDelta(l,-1); else l.items.forEach(it=> balances[it.id]=bal(it.id)+it.amount);
-  logs.splice(i,1); save(K_LOG,logs); save(K_BAL,balances); renderLog();
-}
-
-// ---- Buchung bearbeiten ----
-function openEdit(ts){
-  const l=logs.find(x=>x.ts===ts); if(!l||l.type!=="booking") return;
-  const roster=employees.slice();
-  l.credits.forEach(c=>{ if(!roster.find(e=>e.id===c.id)) roster.push({id:c.id,name:c.name}); });
-  editing={ ts, date:l.date, tipStr:(l.tip/100).toFixed(2), deptOn:l.deptOn, checked:{}, roster };
-  l.credits.forEach(c=> editing.checked[c.id]=true);
-  renderLog();
-}
-function mountEditor(){
-  const m=document.getElementById("editorMount"); if(!m) return;
-  m.innerHTML=
-    `<div class="editor">
-       <div class="ecap">Buchung bearbeiten</div>
-       <div class="erow"><input class="smtxt" type="date" id="eDate" value="${editing.date}"></div>
-       <div class="erow"><input class="smtxt" id="eTip" inputmode="decimal" value="${editing.tipStr}" placeholder="Betrag CHF"></div>
-       <div class="erow"><button class="etoggle ${editing.deptOn?'on':''}" id="eDept">${esc(dept.name)} · ${dept.percent}%<span>${editing.deptOn?'aktiv':'aus'}</span></button></div>
-       <div id="ePicks"></div>
-       <div class="epreview" id="ePreview"></div>
-       <div class="actions">
-         <button class="abtn" id="eCancel">Abbrechen</button>
-         <button class="cta" id="eSave" style="margin-top:0">Speichern</button>
-       </div>
-     </div>`;
-  document.getElementById("eDate").onchange=e=>{ editing.date=e.target.value; };
-  document.getElementById("eTip").oninput=e=>{ editing.tipStr=e.target.value; renderEditDynamic(); };
-  document.getElementById("eDept").onclick=()=>{ editing.deptOn=!editing.deptOn; document.getElementById("eDept").classList.toggle("on",editing.deptOn); document.getElementById("eDept").querySelector("span").textContent=editing.deptOn?'aktiv':'aus'; renderEditDynamic(); };
-  document.getElementById("eCancel").onclick=()=>{ editing=null; renderLog(); };
-  document.getElementById("eSave").onclick=saveEdit;
-  renderEditDynamic();
-}
-function editSplit(){ return splitCredits(toR(editing.tipStr), editing.deptOn, editing.roster, id=>!!editing.checked[id]); }
-function renderEditDynamic(){
-  const {n,deptShare,credits}=editSplit(); const cmap={}; credits.forEach(c=>cmap[c.id]=c.amount);
-  document.getElementById("ePicks").innerHTML=editing.roster.map(e=>{
-    const on=!!editing.checked[e.id];
-    const amt=(on&&cmap[e.id]!=null)?`<span class="amt">+${fr(cmap[e.id])}</span>`:"";
-    return `<button class="pick ${on?'on':''}" data-id="${e.id}"><span class="box">${on?'<i data-icon="check" data-size="14"></i>':''}</span><span class="pname">${esc(e.name)}</span>${amt}</button>`;
-  }).join("");
-  document.querySelectorAll("#ePicks .pick").forEach(b=> b.onclick=()=>{ const id=b.dataset.id; editing.checked[id]=!editing.checked[id]; renderEditDynamic(); });
-  const t=toR(editing.tipStr);
-  let msg;
-  if(t<=0) msg="Betrag eingeben.";
-  else if(n<=0) msg="Mindestens eine Person auswählen.";
-  else msg = (editing.deptOn?`${dept.name}: +${fr(deptShare)} · `:"")+`${n} Mitarbeiter · Total ${fmt(t)}`;
-  document.getElementById("ePreview").textContent=msg;
-  document.getElementById("eSave").disabled=!(t>0 && n>0);
-}
-function saveEdit(){
-  const t=toR(editing.tipStr); const {n,deptShare,credits}=editSplit();
-  if(!(t>0 && n>0)){ alert("Betrag und mindestens eine Person nötig."); return; }
-  const i=logs.findIndex(l=>l.ts===editing.ts); if(i<0){ editing=null; renderLog(); return; }
-  applyDelta(logs[i],-1); // alte Wirkung entfernen
-  const nu={type:"booking", ts:editing.ts, date:editing.date, tip:t, deptOn:editing.deptOn,
-            deptName:dept.name, deptShare:editing.deptOn?deptShare:0, credits, edited:true};
-  applyDelta(nu,+1);      // neue Wirkung anwenden
-  logs[i]=nu; save(K_LOG,logs); save(K_BAL,balances);
-  editing=null; renderLog();
-}
-
-// ---- Init ----
-deptLabel(); renderPick(); updateBookBtn();
-// ---- Als App installierbar (Service Worker) ----
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("Service Worker:", err));
   });
-}
+
+  // Falls schon eingeloggt: direkt weiterleiten (optional, hier nur Info-Konsole)
+  onAuthStateChanged(auth, (user) => {
+    // Bewusst kein Auto-Redirect hier, damit man sich auf dieser Testseite
+    // auch bewusst neu einloggen kann.
+  });
+
+  // Passwort vergessen: Panel ein-/ausblenden
+  const forgotToggle = document.getElementById("forgot-toggle");
+  const forgotPanel = document.getElementById("forgot-panel");
+  const forgotForm = document.getElementById("forgot-form");
+  const forgotError = document.getElementById("forgot-error");
+  const forgotSuccess = document.getElementById("forgot-success");
+  const forgotSubmitBtn = document.getElementById("forgot-submit-btn");
+
+  const forgotMessages = {
+    "auth/invalid-email": "Diese E-Mail-Adresse ist ungültig.",
+    "auth/too-many-requests": "Zu viele Versuche. Bitte kurz warten und erneut versuchen.",
+  };
+
+  forgotToggle.addEventListener("click", () => {
+    forgotPanel.classList.toggle("open");
+    forgotError.textContent = "";
+    forgotSuccess.textContent = "";
+    forgotToggle.textContent = forgotPanel.classList.contains("open") ? "Abbrechen" : "Passwort vergessen?";
+  });
+
+  forgotForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    forgotError.textContent = "";
+    forgotSuccess.textContent = "";
+    forgotSubmitBtn.disabled = true;
+    forgotSubmitBtn.textContent = "Wird gesendet …";
+
+    const email = document.getElementById("forgot-email").value.trim();
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      forgotSuccess.textContent = "Falls ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.";
+      forgotForm.reset();
+    } catch (err) {
+      console.error(err);
+      // Aus Sicherheitsgründen keine Info preisgeben, ob die E-Mail existiert oder nicht,
+      // ausser bei offensichtlich ungültigem Format oder Rate-Limit.
+      if (err.code === "auth/invalid-email" || err.code === "auth/too-many-requests") {
+        forgotError.textContent = forgotMessages[err.code];
+      } else {
+        forgotSuccess.textContent = "Falls ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.";
+      }
+    } finally {
+      forgotSubmitBtn.disabled = false;
+      forgotSubmitBtn.textContent = "Link senden";
+    }
+  });
+
+  // Service Worker registrieren, damit die App auf dem Smartphone installierbar wird
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch((err) => {
+        console.warn("Service Worker konnte nicht registriert werden:", err);
+      });
+    });
+  }
 </script>
+
 </body>
 </html>

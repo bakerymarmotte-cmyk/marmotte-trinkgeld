@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Marmotte Trinkgeld</title>
+<link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" sizes="120x120" href="assets/apple-touch-icon-120.png">
+<link rel="apple-touch-icon" sizes="152x152" href="assets/apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="assets/apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f5f4f2" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Trinkgeld" />
+<link rel="stylesheet" href="https://bakerymarmotte-cmyk.github.io/marmotte-design/marmotte.css">
+<script src="https://bakerymarmotte-cmyk.github.io/marmotte-design/theme.js"></script>
+<script src="https://bakerymarmotte-cmyk.github.io/marmotte-design/icons.js" defer></script>
+<style>
+  /* Trinkgeld – app-spezifisch. Farben, Schrift und Hell/Dunkel aus marmotte.css */
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{padding-bottom:calc(48px + env(safe-area-inset-bottom));}
+  button{font-family:inherit; cursor:pointer;}
+  .topbar{padding-top:max(20px, env(safe-area-inset-top));}
+  .wrap{max-width:520px; margin:0 auto; padding:0 16px;}
+  .mono{font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
+
+  /* Navigation */
+  .tabs{position:sticky; top:0; z-index:20; display:flex; gap:4px; padding:4px; margin:4px 0 20px;
+        background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-lg); box-shadow:var(--m-shadow);}
+  .tab{flex:1; min-width:0; border:none; background:none; color:var(--m-muted); border-radius:var(--m-radius-md);
+       display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 2px 7px; font-size:11px; font-weight:500;}
+  .tab.on{background:var(--m-chip-bg); color:var(--m-chip-fg);}
+
+  label.lbl{display:block; font-size:12px; color:var(--m-muted); margin-bottom:4px;}
+  input{font-family:inherit; color:var(--m-text);}
+  .txt{width:100%; padding:11px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border);
+       font-size:16px; background:var(--m-surface-2); outline:none;}
+  .txt:focus, .tipbox:focus-within, .pct:focus-within{border-color:var(--m-accent); box-shadow:0 0 0 3px var(--m-chip-bg);}
+  .row-add{display:flex; gap:8px; margin-bottom:16px;}
+  .iconbtn{width:46px; flex-shrink:0; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
+           display:flex; align-items:center; justify-content:center;}
+
+  .emp{display:flex; align-items:center; justify-content:space-between; background:var(--m-card);
+       border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
+  .emp .name{font-size:15px; font-weight:500;}
+  .del{border:none; background:transparent; color:var(--m-muted); padding:4px 6px; display:flex;}
+  .del:hover{color:var(--m-danger);}
+  .empty{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
+
+  .deptbox{margin-top:24px; padding-top:20px; border-top:1px solid var(--m-border);}
+  .cap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-faint); font-weight:500; margin-bottom:10px;}
+  .deptrow{display:flex; gap:8px;}
+  .pct{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
+       border-radius:var(--m-radius-sm); padding:0 12px; width:96px;}
+  .pct input{width:100%; border:none; font-size:16px; outline:none; text-align:right; background:transparent;}
+  .pct span{color:var(--m-muted); margin-left:2px;}
+
+  .datebox{margin-bottom:14px;}
+  .tipbox{display:flex; align-items:center; background:var(--m-card); border:1px solid var(--m-border);
+          border-radius:var(--m-radius-lg); padding:4px 16px; margin-bottom:16px;}
+  .tipbox .cur{color:var(--m-muted); font-size:18px; font-weight:500;}
+  .tipbox input{flex:1; border:none; font-size:30px; font-weight:700; padding:12px 10px; outline:none; background:transparent; width:100%;
+                font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
+
+  .toggle{width:100%; display:flex; align-items:center; justify-content:space-between;
+          border-radius:var(--m-radius-md); padding:13px 16px; margin-bottom:20px;
+          font-size:15px; font-weight:600; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-text);}
+  .toggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
+  .toggle .state{font-size:13px; font-weight:500;}
+
+  .subhead{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500; color:var(--m-faint); margin-bottom:10px;}
+  .pick{display:flex; align-items:center; gap:12px; width:100%; border:1px solid var(--m-border);
+        border-radius:var(--m-radius-md); padding:12px 14px; text-align:left; background:var(--m-card-soft); margin-bottom:8px; color:var(--m-text);}
+  .pick.on{background:var(--m-card); border-color:var(--m-accent);}
+  .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--m-border);
+       display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--m-accent-fg);}
+  .pick.on .box{background:var(--m-accent); border-color:var(--m-accent);}
+  .pick .pname{font-size:15px; font-weight:500; color:var(--m-muted); flex:1;}
+  .pick.on .pname{color:var(--m-text);}
+  .pick .amt{font-size:14px; font-weight:600; color:var(--m-success); font-family:var(--m-font-mono);}
+
+  .cta{width:100%; padding:14px; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
+       font-size:15px; font-weight:600; margin-top:6px;}
+  .cta:disabled{background:var(--m-card-soft); color:var(--m-faint); border:1px solid var(--m-border); cursor:not-allowed;}
+  .hint{font-size:13px; color:var(--m-muted); text-align:center; margin-top:10px; line-height:1.5;}
+  .flash{background:var(--m-success-bg); border:1px solid var(--m-success); color:var(--m-success); border-radius:var(--m-radius-md);
+         padding:12px 14px; font-size:14px; margin-bottom:16px;}
+
+  /* Topf */
+  .pot{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border:1px solid var(--m-border);
+       border-radius:var(--m-radius-lg); padding:18px; margin-bottom:20px; text-align:center;}
+  .pot .k{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500;}
+  .pot .v{font-size:32px; font-weight:700; margin-top:4px; font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
+  .bal{display:flex; align-items:center; gap:12px; background:var(--m-card); border:1px solid var(--m-border);
+       border-radius:var(--m-radius-md); padding:10px 14px; margin-bottom:8px;}
+  .bal.dept{border-color:var(--m-t-amber-fg);}
+  .bal .bn{flex:1; font-size:15px; font-weight:500; min-width:0;}
+  .bal .bb{font-size:12.5px; color:var(--m-muted); white-space:nowrap;}
+  .bal .bb.neg{color:var(--m-danger);}
+  .bal .pin{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
+            border-radius:var(--m-radius-sm); padding:0 8px; width:104px;}
+  .bal .pin span{font-size:12px; color:var(--m-muted);}
+  .bal .pin input{width:100%; border:none; background:transparent; text-align:right; font-size:15px; font-weight:600; outline:none; padding:8px 4px;
+                  font-family:var(--m-font-mono);}
+  .bal .dash{width:104px; text-align:right; color:var(--m-faint); font-size:14px;}
+
+  /* Verlauf */
+  .logitem{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
+  .logitem .lh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; gap:8px;}
+  .logitem .lt{font-weight:600; font-size:15px;}
+  .logitem .ld{font-size:12px; color:var(--m-muted); white-space:nowrap;}
+  .logitem .lb{font-size:13.5px; color:var(--m-muted); line-height:1.6;}
+  .logitem.payout .lt{color:var(--m-danger);}
+  .logitem .edited{font-size:11px; color:var(--m-t-amber-fg); font-weight:600; margin-left:6px;}
+  .actions{display:flex; gap:8px; margin-top:10px;}
+  .abtn{flex:1; padding:9px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); background:var(--m-card);
+        font-weight:600; font-size:13px; color:var(--m-text);}
+  .abtn.danger{color:var(--m-danger);}
+
+  /* Bearbeiten */
+  .editor{border:1px solid var(--m-accent); border-radius:var(--m-radius-md); padding:14px; margin-bottom:8px; background:var(--m-card);}
+  .editor .ecap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-accent-text); font-weight:600; margin-bottom:12px;}
+  .editor .erow{margin-bottom:12px;}
+  .editor .smtxt{width:100%; padding:10px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); font-size:16px; background:var(--m-surface-2); outline:none;}
+  .etoggle{width:100%; display:flex; align-items:center; justify-content:space-between; border-radius:var(--m-radius-sm);
+           padding:11px 14px; font-size:14px; font-weight:600; border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-text);}
+  .etoggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
+  .epreview{font-size:13px; color:var(--m-muted); margin:10px 0; line-height:1.5;}
+  .hidden{display:none;}
+  .who .name{font-size:14px; font-weight:600;}
+  .logout-btn{width:40px; height:40px; border-radius:50%; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-muted); display:inline-flex; align-items:center; justify-content:center;}
+  .loading{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
+  .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translate(-50%,20px); background:var(--m-text); color:var(--m-bg);
+         padding:10px 16px; border-radius:999px; font-size:13.5px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:200;}
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo"><i data-icon="croissant"></i></div>
+    <div>
+      <div class="brand-name">Marmotte</div>
+      <div class="brand-sub">Trinkgeld</div>
+    </div>
+  </div>
+  <div class="who">
+    <span class="name" id="user-name-label"></span>
+    <button class="m-theme-btn" data-theme-toggle aria-label="Hell/Dunkel umschalten"></button>
+    <button class="logout-btn" id="logout-btn" aria-label="Abmelden"><i data-icon="log-out" data-size="16"></i></button>
+  </div>
+</div>
+<div class="wrap">
+
+  <div class="tabs">
+    <button class="tab on" data-v="book"><i data-icon="hand-coins"></i>Buchen</button>
+    <button class="tab" data-v="pot"><i data-icon="piggy-bank"></i>Topf</button>
+    <button class="tab" data-v="team"><i data-icon="users"></i>Team</button>
+    <button class="tab" data-v="log"><i data-icon="history"></i>Verlauf</button>
+  </div>
+  <!-- ===== BUCHEN ===== -->
+  <section id="viewBook">
+    <div id="bookFlash"></div>
+    <label class="lbl">Datum</label>
+    <div class="datebox"><input class="txt" type="date" id="bookDate" /></div>
+    <label class="lbl">Trinkgeld des Tages</label>
+    <div class="tipbox"><span class="cur">CHF</span><input id="tip" inputmode="decimal" placeholder="0.00" /></div>
+    <button class="toggle on" id="deptToggle"><span id="deptLabel">Abteilung · 10%</span><span class="state" id="deptState">aktiv</span></button>
+    <div class="subhead">Wer hat gearbeitet?</div>
+    <div id="pickList"><p class="loading">Lädt …</p></div>
+    <button class="cta" id="bookBtn">Tag buchen</button>
+    <div class="hint" id="bookHint"></div>
+  </section>
+
+  <!-- ===== TOPF ===== -->
+  <section id="viewPot" class="hidden">
+    <div class="pot"><div class="k">Im Topf</div><div class="v" id="potTotal">CHF 0.00</div></div>
+    <div class="subhead">Guthaben · Auszahlbetrag eingeben</div>
+    <div id="balList"></div>
+    <button class="cta" id="payBtn">Auszahlung buchen</button>
+    <div class="hint">Vorschlag = auf ganze Franken abgerundet. Frei editierbar; der Rest bleibt als Guthaben stehen.</div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section id="viewTeam" class="hidden">
+    <div class="row-add"><input class="txt" id="newName" placeholder="Name eingeben" /><button class="iconbtn" id="addBtn" aria-label="Hinzufügen"><i data-icon="plus"></i></button></div>
+    <div id="empList"></div>
+    <div class="deptbox">
+      <div class="cap">Abteilung (fixer Anteil)</div>
+      <div class="deptrow">
+        <input class="txt" id="deptName" />
+        <div class="pct"><input id="deptPct" type="number" min="0" max="100" /><span>%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VERLAUF ===== -->
+  <section id="viewLog" class="hidden"><div id="logList"></div></section>
+</div>
+
+<div class="toast" id="toast"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
