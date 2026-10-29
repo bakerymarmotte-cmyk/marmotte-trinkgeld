@@ -131,6 +131,16 @@
   .etoggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
   .epreview{font-size:13px; color:var(--m-muted); margin:10px 0; line-height:1.5;}
   .hidden{display:none;}
+  /* Abzug */
+  .abzug-box{margin-top:28px; padding-top:20px; border-top:1px solid var(--m-border);}
+  .abzug-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
+  .tipbox.small input{font-size:22px; padding:8px 10px;}
+  .vorschau{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:6px 14px; margin-bottom:6px;}
+  .vorschau .vr{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--m-border); font-size:14px;}
+  .vorschau .vr:first-child{border-top:none;}
+  .vorschau .vt{color:var(--m-muted); font-size:12.5px; margin-left:6px;}
+  .vorschau .va{font-family:var(--m-font-mono); color:var(--m-danger); font-weight:600;}
+  .logitem.abzug .lt{color:var(--m-danger);}
   .who .name{font-size:14px; font-weight:600;}
   .logout-btn{width:40px; height:40px; border-radius:50%; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-muted); display:inline-flex; align-items:center; justify-content:center;}
   .loading{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
@@ -183,6 +193,22 @@
     <div id="balList"></div>
     <button class="cta" id="payBtn">Auszahlung buchen</button>
     <div class="hint">Vorschlag = auf ganze Franken abgerundet. Frei editierbar; der Rest bleibt als Guthaben stehen.</div>
+
+    <!-- Abzug nach Arbeitstagen -->
+    <div class="abzug-box">
+      <div class="subhead">Abzug nach Arbeitstagen</div>
+      <p class="hint" style="text-align:left; margin:0 0 12px;">Ein Betrag wird auf alle verteilt, die im Zeitraum Trinkgeld bekommen haben – anteilmässig nach Anzahl Tage. Guthaben dürfen dabei ins Minus gehen.</p>
+      <div class="abzug-row">
+        <div><label class="lbl">Von</label><input class="txt" type="date" id="abzVon"></div>
+        <div><label class="lbl">Bis</label><input class="txt" type="date" id="abzBis"></div>
+      </div>
+      <label class="lbl">Betrag</label>
+      <div class="tipbox small"><span class="cur">CHF</span><input id="abzBetrag" inputmode="decimal" placeholder="0.00" /></div>
+      <label class="lbl">Bezeichnung</label>
+      <input class="txt" id="abzText" maxlength="80" placeholder="z.B. Kassendifferenz Woche 43" style="margin-bottom:14px;">
+      <div id="abzVorschau"></div>
+      <button class="cta" id="abzBtn" disabled>Abzug buchen</button>
+    </div>
   </section>
 
   <!-- ===== TEAM ===== -->

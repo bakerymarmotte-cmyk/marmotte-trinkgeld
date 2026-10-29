@@ -52,7 +52,7 @@ function berechneGuthaben() {
     if (l.type === "booking") {
       if (l.deptOn && l.deptShare > 0) balances[DEPT] = bal(DEPT) + l.deptShare;
       l.credits.forEach((c) => (balances[c.id] = bal(c.id) + c.amount));
-    } else if (l.type === "payout") {
+    } else if (l.type === "payout" || l.type === "abzug") {
       l.items.forEach((it) => (balances[it.id] = bal(it.id) - it.amount));
     }
   }
@@ -141,6 +141,13 @@ function setup() {
   };
   document.getElementById("bookBtn").onclick = buchen;
   document.getElementById("payBtn").onclick = auszahlen;
+
+  // Abzug nach Arbeitstagen: Standard = die letzten 7 Tage
+  const h = new Date(); const vor = new Date(h.getFullYear(), h.getMonth(), h.getDate() - 6);
+  document.getElementById("abzVon").value = isoVon(vor);
+  document.getElementById("abzBis").value = todayISO();
+  ["abzVon", "abzBis", "abzBetrag", "abzText"].forEach((id) => document.getElementById(id).addEventListener("input", renderAbzug));
+  document.getElementById("abzBtn").onclick = abzugBuchen;
   deptLabel();
 }
 
@@ -215,7 +222,10 @@ async function buchen() {
 
 // ---- Topf ----
 function totalPot() { let s = 0; for (const k in balances) s += balances[k]; return s; }
+function isoVon(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+
 function renderPot() {
+  renderAbzug();
   document.getElementById("potTotal").textContent = fmt(totalPot());
   const box = document.getElementById("balList"); const rows = [];
   if (bal(DEPT) !== 0) rows.push(balRow(DEPT, dept.name, bal(DEPT), true));
@@ -249,6 +259,56 @@ async function auszahlen() {
   } catch (e) { console.error(e); toast("Auszahlung fehlgeschlagen. Bitte Verbindung prüfen."); }
 }
 
+// ---- Abzug nach Arbeitstagen ----
+// Zählt pro Person, an wie vielen verschiedenen Tagen sie im Zeitraum Trinkgeld bekommen hat,
+// und verteilt den Betrag anteilmässig. Restrappen gehen an die grössten Nachkommastellen.
+function abzugBerechnen() {
+  const von = document.getElementById("abzVon").value, bis = document.getElementById("abzBis").value;
+  const betrag = toR(document.getElementById("abzBetrag").value);
+  const tage = {}; // id → Set(datum)
+  const namen = {};
+  for (const l of logs) {
+    if (l.type !== "booking" || l.date < von || l.date > bis) continue;
+    l.credits.forEach((c) => { (tage[c.id] ||= new Set()).add(l.date); namen[c.id] = c.name; });
+  }
+  const personen = Object.keys(tage).map((id) => ({
+    id, name: (employees.find((e) => e.id === id) || {}).name || namen[id], tage: tage[id].size,
+  })).sort((a, b) => b.tage - a.tage || a.name.localeCompare(b.name));
+  const sumTage = personen.reduce((s, p) => s + p.tage, 0);
+  if (!(betrag > 0) || !sumTage || !von || !bis || von > bis) return { von, bis, betrag, personen, sumTage, items: [] };
+  const roh = personen.map((p) => ({ ...p, exakt: betrag * p.tage / sumTage }));
+  roh.forEach((p) => (p.amount = Math.floor(p.exakt)));
+  let rest = betrag - roh.reduce((s, p) => s + p.amount, 0);
+  [...roh].sort((a, b) => (b.exakt - b.amount) - (a.exakt - a.amount)).forEach((p) => { if (rest > 0) { p.amount++; rest--; } });
+  return { von, bis, betrag, personen, sumTage, items: roh.map(({ id, name, tage, amount }) => ({ id, name, tage, amount })) };
+}
+function renderAbzug() {
+  const box = document.getElementById("abzVorschau"), btn = document.getElementById("abzBtn");
+  if (!box || !geladen.logs) return;
+  const r = abzugBerechnen();
+  if (!r.von || !r.bis || r.von > r.bis) { box.innerHTML = '<p class="hint" style="text-align:left">Bitte einen gültigen Zeitraum wählen.</p>'; btn.disabled = true; return; }
+  if (!r.personen.length) { box.innerHTML = '<p class="hint" style="text-align:left">In diesem Zeitraum hat niemand Trinkgeld bekommen.</p>'; btn.disabled = true; return; }
+  box.innerHTML = `<div class="vorschau">${r.personen.map((p) => {
+    const it = r.items.find((i) => i.id === p.id);
+    return `<div class="vr"><span>${esc(p.name)}<span class="vt">${p.tage} ${p.tage === 1 ? "Tag" : "Tage"}</span></span><span class="va">${it ? "−" + fr(it.amount) : ""}</span></div>`;
+  }).join("")}</div><p class="hint" style="text-align:left; margin-top:0;">${r.sumTage} Arbeitstage total${r.betrag > 0 ? ` · ${fmt(r.betrag)} verteilt` : ""}</p>`;
+  btn.disabled = !(r.betrag > 0 && r.items.length && document.getElementById("abzText").value.trim());
+}
+async function abzugBuchen() {
+  const r = abzugBerechnen();
+  const text = document.getElementById("abzText").value.trim();
+  if (!(r.betrag > 0) || !r.items.length) return;
+  if (!text) { toast("Bitte eine Bezeichnung eingeben"); return; }
+  if (!confirm(`«${text}»: ${fmt(r.betrag)} auf ${r.items.length} Personen verteilen und von ihrem Guthaben abziehen?`)) return;
+  try {
+    await addDoc(collection(db, "buchungen"), {
+      type: "abzug", ts: Date.now(), date: todayISO(), von: r.von, bis: r.bis, text, betrag: r.betrag, items: r.items, createdAt: serverTimestamp(),
+    });
+    document.getElementById("abzBetrag").value = ""; document.getElementById("abzText").value = "";
+    toast("Abzug gebucht");
+  } catch (e) { console.error(e); toast("Abzug fehlgeschlagen. Bitte Verbindung prüfen."); }
+}
+
 // ---- Verlauf ----
 function renderLog() {
   const box = document.getElementById("logList");
@@ -266,6 +326,12 @@ function renderLog() {
              `<div class="lb">${lines.join(" · ")}</div>` +
              `<div class="actions"><button class="abtn" data-edit="${l.id}">Bearbeiten</button>` +
              (isLast ? `<button class="abtn danger" data-undo="${l.id}">Löschen</button>` : "") + "</div></div>";
+    }
+    if (l.type === "abzug") {
+      const lines = l.items.map((i) => `${esc(i.name)} (${i.tage} ${i.tage === 1 ? "Tag" : "Tage"}): −${fr(i.amount)}`);
+      return `<div class="logitem abzug"><div class="lh"><span class="lt">${esc(l.text || "Abzug")} −${fr(l.betrag)}</span><span class="ld">${deDate(l.date)}</span></div>` +
+             `<div class="lb">Zeitraum ${deDate(l.von)} – ${deDate(l.bis)} · ${lines.join(" · ")}</div>` +
+             (isLast ? `<div class="actions"><button class="abtn danger" data-undo="${l.id}">Löschen</button></div>` : "") + "</div>";
     }
     const total = l.items.reduce((s, i) => s + i.amount, 0);
     const lines = l.items.map((i) => `${esc(i.name)}: −${fr(i.amount)}`);

@@ -6,7 +6,7 @@
 // auf derselben Adresse, deshalb hat jede App ein eigenes Präfix und räumt nur
 // ihre eigenen Caches auf.
 const CACHE_PREFIX = "marmotte-trinkgeld-";
-const CACHE_NAME = `${CACHE_PREFIX}v2`;
+const CACHE_NAME = `${CACHE_PREFIX}v3`;
 const DESIGN_ORIGIN = "https://bakerymarmotte-cmyk.github.io";
 const DESIGN = "https://bakerymarmotte-cmyk.github.io/marmotte-design";
 const SHELL_FILES = [
