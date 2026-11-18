@@ -12,7 +12,6 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f5f4f2" />
 <meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Trinkgeld" />
 <link rel="stylesheet" href="https://bakerymarmotte-cmyk.github.io/marmotte-design/marmotte.css">
@@ -25,88 +24,101 @@
   body{padding-bottom:calc(48px + env(safe-area-inset-bottom));}
   button{font-family:inherit; cursor:pointer;}
   .topbar{padding-top:max(20px, env(safe-area-inset-top));}
-  .wrap{max-width:520px; margin:0 auto; padding:0 16px;}
+  .wrap{max-width:560px; margin:0 auto; padding:0 16px;}
   .mono{font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
+  .hidden{display:none !important;}
+  body:not(.is-admin) .admin-only{display:none !important;}
 
   /* Navigation */
-  .tabs{position:sticky; top:0; z-index:20; display:flex; gap:4px; padding:4px; margin:4px 0 20px;
+  .tabs{position:sticky; top:0; z-index:20; display:flex; gap:4px; padding:4px; margin:4px 0 12px;
         background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-lg); box-shadow:var(--m-shadow);}
   .tab{flex:1; min-width:0; border:none; background:none; color:var(--m-muted); border-radius:var(--m-radius-md);
        display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 2px 7px; font-size:11px; font-weight:500;}
   .tab.on{background:var(--m-chip-bg); color:var(--m-chip-fg);}
+  .standort-bar{display:flex; align-items:center; justify-content:center; gap:8px; margin:0 0 18px; font-size:14px;}
+  .standort-bar .sb-label{color:var(--m-muted); font-size:13px;}
+  .standort-bar select{font-size:15px; font-weight:600; padding:6px 10px; border-radius:var(--m-radius-sm);
+        border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-text); font-family:inherit;}
 
   label.lbl{display:block; font-size:12px; color:var(--m-muted); margin-bottom:4px;}
-  input{font-family:inherit; color:var(--m-text);}
+  input, select{font-family:inherit; color:var(--m-text);}
   .txt{width:100%; padding:11px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border);
        font-size:16px; background:var(--m-surface-2); outline:none;}
-  .txt:focus, .tipbox:focus-within, .pct:focus-within{border-color:var(--m-accent); box-shadow:0 0 0 3px var(--m-chip-bg);}
-  .row-add{display:flex; gap:8px; margin-bottom:16px;}
-  .iconbtn{width:46px; flex-shrink:0; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
-           display:flex; align-items:center; justify-content:center;}
-
-  .emp{display:flex; align-items:center; justify-content:space-between; background:var(--m-card);
-       border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
-  .emp .name{font-size:15px; font-weight:500;}
-  .del{border:none; background:transparent; color:var(--m-muted); padding:4px 6px; display:flex;}
-  .del:hover{color:var(--m-danger);}
+  .txt:focus, .tipbox:focus-within{border-color:var(--m-accent); box-shadow:0 0 0 3px var(--m-chip-bg);}
   .empty{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
+  .loading{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
+  .hint{font-size:13px; color:var(--m-muted); text-align:center; margin-top:10px; line-height:1.5;}
+  .hint.left{text-align:left;}
+  .fehler{color:var(--m-danger);}
+  .subhead{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500; color:var(--m-faint); margin:0 0 10px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
+  .card{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-lg); padding:14px; margin-bottom:14px; box-shadow:var(--m-shadow);}
 
-  .deptbox{margin-top:24px; padding-top:20px; border-top:1px solid var(--m-border);}
-  .cap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-faint); font-weight:500; margin-bottom:10px;}
-  .deptrow{display:flex; gap:8px;}
-  .pct{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-sm); padding:0 12px; width:96px;}
-  .pct input{width:100%; border:none; font-size:16px; outline:none; text-align:right; background:transparent;}
-  .pct span{color:var(--m-muted); margin-left:2px;}
-
+  /* Buchen */
   .datebox{margin-bottom:14px;}
   .tipbox{display:flex; align-items:center; background:var(--m-card); border:1px solid var(--m-border);
           border-radius:var(--m-radius-lg); padding:4px 16px; margin-bottom:16px;}
   .tipbox .cur{color:var(--m-muted); font-size:18px; font-weight:500;}
   .tipbox input{flex:1; border:none; font-size:30px; font-weight:700; padding:12px 10px; outline:none; background:transparent; width:100%;
                 font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
-
-  .toggle{width:100%; display:flex; align-items:center; justify-content:space-between;
-          border-radius:var(--m-radius-md); padding:13px 16px; margin-bottom:20px;
-          font-size:15px; font-weight:600; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-text);}
-  .toggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
-  .toggle .state{font-size:13px; font-weight:500;}
-
-  .subhead{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500; color:var(--m-faint); margin-bottom:10px;}
+  .tipbox.small input{font-size:22px; padding:8px 10px;}
+  .topf-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:10px;}
+  .topf-head .tn{font-weight:600; font-size:15px;}
+  .topf-head .tp{font-size:12.5px; color:var(--m-muted);}
+  .topf-head .tb{font-family:var(--m-font-mono); font-weight:700; font-size:15px;}
+  .topf-art{font-size:12px; color:var(--m-faint); margin:-6px 0 10px;}
   .pick{display:flex; align-items:center; gap:12px; width:100%; border:1px solid var(--m-border);
-        border-radius:var(--m-radius-md); padding:12px 14px; text-align:left; background:var(--m-card-soft); margin-bottom:8px; color:var(--m-text);}
+        border-radius:var(--m-radius-md); padding:11px 14px; text-align:left; background:var(--m-card-soft); margin-bottom:8px; color:var(--m-text);}
   .pick.on{background:var(--m-card); border-color:var(--m-accent);}
+  .pick.fix{cursor:default;}
   .box{width:22px; height:22px; border-radius:6px; border:2px solid var(--m-border);
        display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--m-accent-fg);}
   .pick.on .box{background:var(--m-accent); border-color:var(--m-accent);}
   .pick .pname{font-size:15px; font-weight:500; color:var(--m-muted); flex:1;}
-  .pick.on .pname{color:var(--m-text);}
+  .pick.on .pname, .pick.fix .pname{color:var(--m-text);}
+  .pick .pst{font-size:12.5px; color:var(--m-muted);}
   .pick .amt{font-size:14px; font-weight:600; color:var(--m-success); font-family:var(--m-font-mono);}
-
   .cta{width:100%; padding:14px; border-radius:var(--m-radius-md); border:none; background:var(--m-accent); color:var(--m-accent-fg);
        font-size:15px; font-weight:600; margin-top:6px;}
   .cta:disabled{background:var(--m-card-soft); color:var(--m-faint); border:1px solid var(--m-border); cursor:not-allowed;}
-  .hint{font-size:13px; color:var(--m-muted); text-align:center; margin-top:10px; line-height:1.5;}
+  .cta.sec{background:var(--m-card); color:var(--m-text); border:1px solid var(--m-border);}
   .flash{background:var(--m-success-bg); border:1px solid var(--m-success); color:var(--m-success); border-radius:var(--m-radius-md);
          padding:12px 14px; font-size:14px; margin-bottom:16px;}
 
-  /* Topf */
-  .pot{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-lg); padding:18px; margin-bottom:20px; text-align:center;}
-  .pot .k{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:500;}
-  .pot .v{font-size:32px; font-weight:700; margin-top:4px; font-family:var(--m-font-mono); font-variant-numeric:tabular-nums;}
-  .bal{display:flex; align-items:center; gap:12px; background:var(--m-card); border:1px solid var(--m-border);
-       border-radius:var(--m-radius-md); padding:10px 14px; margin-bottom:8px;}
-  .bal.dept{border-color:var(--m-t-amber-fg);}
+  /* Guthaben */
+  .pot{display:flex; justify-content:space-between; align-items:baseline; background:var(--m-t-amber-bg); color:var(--m-t-amber-fg);
+       border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:12px;}
+  .pot .k{font-size:12px; letter-spacing:.05em; text-transform:uppercase; font-weight:600;}
+  .pot .v{font-size:22px; font-weight:700; font-family:var(--m-font-mono);}
+  .bal{display:flex; align-items:center; gap:12px; border-top:1px solid var(--m-border); padding:9px 0;}
+  .bal:first-of-type{border-top:none;}
   .bal .bn{flex:1; font-size:15px; font-weight:500; min-width:0;}
   .bal .bb{font-size:12.5px; color:var(--m-muted); white-space:nowrap;}
   .bal .bb.neg{color:var(--m-danger);}
-  .bal .pin{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
-            border-radius:var(--m-radius-sm); padding:0 8px; width:104px;}
-  .bal .pin span{font-size:12px; color:var(--m-muted);}
-  .bal .pin input{width:100%; border:none; background:transparent; text-align:right; font-size:15px; font-weight:600; outline:none; padding:8px 4px;
-                  font-family:var(--m-font-mono);}
-  .bal .dash{width:104px; text-align:right; color:var(--m-faint); font-size:14px;}
+  .pin{display:flex; align-items:center; background:var(--m-surface-2); border:1px solid var(--m-border);
+       border-radius:var(--m-radius-sm); padding:0 8px; width:104px;}
+  .pin span{font-size:12px; color:var(--m-muted);}
+  .pin input{width:100%; border:none; background:transparent; text-align:right; font-size:15px; font-weight:600; outline:none; padding:8px 4px;
+             font-family:var(--m-font-mono);}
+  .dash{width:104px; text-align:right; color:var(--m-faint); font-size:14px;}
+  details.abzug{margin-top:14px; border-top:1px dashed var(--m-border); padding-top:10px;}
+  details.abzug summary{cursor:pointer; font-size:14px; font-weight:600; color:var(--m-muted);}
+  .vorschau{background:var(--m-surface-2); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:6px 14px; margin-bottom:6px;}
+  .vorschau .vr{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--m-border); font-size:14px;}
+  .vorschau .vr:first-child{border-top:none;}
+  .vorschau .vt{color:var(--m-muted); font-size:12.5px; margin-left:6px;}
+  .vorschau .va{font-family:var(--m-font-mono); color:var(--m-danger); font-weight:600;}
+
+  /* Listen */
+  .item{display:flex; align-items:center; gap:10px; background:var(--m-card); border:1px solid var(--m-border);
+        border-radius:var(--m-radius-md); padding:11px 14px; margin-bottom:8px;}
+  .item.inaktiv{opacity:.55;}
+  .item .im{flex:1; min-width:0;}
+  .item .in{font-size:15px; font-weight:500;}
+  .item .is{font-size:12.5px; color:var(--m-muted);}
+  .ibtn{border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-muted); border-radius:8px; height:32px; padding:0 10px;
+        display:inline-flex; align-items:center; gap:4px; font-size:12.5px;}
+  .gruppe{margin:18px 4px 8px; font-size:12px; font-weight:600; color:var(--m-muted); text-transform:uppercase; letter-spacing:.04em;}
 
   /* Verlauf */
   .logitem{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:12px 14px; margin-bottom:8px;}
@@ -114,36 +126,21 @@
   .logitem .lt{font-weight:600; font-size:15px;}
   .logitem .ld{font-size:12px; color:var(--m-muted); white-space:nowrap;}
   .logitem .lb{font-size:13.5px; color:var(--m-muted); line-height:1.6;}
-  .logitem.payout .lt{color:var(--m-danger);}
-  .logitem .edited{font-size:11px; color:var(--m-t-amber-fg); font-weight:600; margin-left:6px;}
-  .actions{display:flex; gap:8px; margin-top:10px;}
-  .abtn{flex:1; padding:9px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); background:var(--m-card);
-        font-weight:600; font-size:13px; color:var(--m-text);}
-  .abtn.danger{color:var(--m-danger);}
+  .logitem.auszahlung .lt, .logitem.abzug .lt{color:var(--m-danger);}
+  .abtn{padding:8px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); background:var(--m-card);
+        font-weight:600; font-size:13px; color:var(--m-danger); margin-top:8px;}
 
-  /* Bearbeiten */
-  .editor{border:1px solid var(--m-accent); border-radius:var(--m-radius-md); padding:14px; margin-bottom:8px; background:var(--m-card);}
-  .editor .ecap{font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--m-accent-text); font-weight:600; margin-bottom:12px;}
-  .editor .erow{margin-bottom:12px;}
-  .editor .smtxt{width:100%; padding:10px 12px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); font-size:16px; background:var(--m-surface-2); outline:none;}
-  .etoggle{width:100%; display:flex; align-items:center; justify-content:space-between; border-radius:var(--m-radius-sm);
-           padding:11px 14px; font-size:14px; font-weight:600; border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-text);}
-  .etoggle.on{background:var(--m-t-amber-bg); color:var(--m-t-amber-fg); border-color:var(--m-t-amber-fg);}
-  .epreview{font-size:13px; color:var(--m-muted); margin:10px 0; line-height:1.5;}
-  .hidden{display:none;}
-  /* Abzug */
-  .abzug-box{margin-top:28px; padding-top:20px; border-top:1px solid var(--m-border);}
-  .abzug-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
-  .tipbox.small input{font-size:22px; padding:8px 10px;}
-  .vorschau{background:var(--m-card); border:1px solid var(--m-border); border-radius:var(--m-radius-md); padding:6px 14px; margin-bottom:6px;}
-  .vorschau .vr{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--m-border); font-size:14px;}
-  .vorschau .vr:first-child{border-top:none;}
-  .vorschau .vt{color:var(--m-muted); font-size:12.5px; margin-left:6px;}
-  .vorschau .va{font-family:var(--m-font-mono); color:var(--m-danger); font-weight:600;}
-  .logitem.abzug .lt{color:var(--m-danger);}
+  /* Formulare */
+  .form-err{color:var(--m-danger); font-size:13.5px; margin:0 0 10px;}
+  .form-err:empty{margin:0;}
+  .seg{display:flex; gap:6px;}
+  .seg button{flex:1; padding:10px; border-radius:var(--m-radius-sm); border:1px solid var(--m-border); background:var(--m-surface-2); color:var(--m-muted); font-size:13.5px; font-weight:600;}
+  .seg button.on{border-color:var(--m-accent); background:var(--m-chip-bg); color:var(--m-chip-fg);}
+  .summe{font-size:13.5px; margin:4px 0 12px;}
+  .summe.ok{color:var(--m-success);} .summe.nok{color:var(--m-danger);}
+
   .who .name{font-size:14px; font-weight:600;}
   .logout-btn{width:40px; height:40px; border-radius:50%; border:1px solid var(--m-border); background:var(--m-card); color:var(--m-muted); display:inline-flex; align-items:center; justify-content:center;}
-  .loading{color:var(--m-muted); font-size:14px; text-align:center; padding:24px 0;}
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translate(-50%,20px); background:var(--m-text); color:var(--m-bg);
          padding:10px 16px; border-radius:999px; font-size:13.5px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:200;}
   .toast.show{opacity:1; transform:translate(-50%,0);}
@@ -164,68 +161,112 @@
     <button class="logout-btn" id="logout-btn" aria-label="Abmelden"><i data-icon="log-out" data-size="16"></i></button>
   </div>
 </div>
-<div class="wrap">
+<div class="wrap" id="wrap">
 
-  <div class="tabs">
-    <button class="tab on" data-v="book"><i data-icon="hand-coins"></i>Buchen</button>
-    <button class="tab" data-v="pot"><i data-icon="piggy-bank"></i>Topf</button>
-    <button class="tab" data-v="team"><i data-icon="users"></i>Team</button>
-    <button class="tab" data-v="log"><i data-icon="history"></i>Verlauf</button>
+  <div class="tabs admin-only">
+    <button class="tab on" data-v="buchen"><i data-icon="hand-coins"></i>Buchen</button>
+    <button class="tab" data-v="guthaben"><i data-icon="piggy-bank"></i>Guthaben</button>
+    <button class="tab" data-v="personen"><i data-icon="users"></i>Personen</button>
+    <button class="tab" data-v="verlauf"><i data-icon="history"></i>Verlauf</button>
+    <button class="tab" data-v="einst"><i data-icon="settings"></i>Einstellungen</button>
   </div>
+
+  <div class="standort-bar nur-daten">
+    <span class="sb-label">Standort</span>
+    <select id="standort-wahl" class="admin-only" aria-label="Standort wählen"></select>
+    <strong id="standort-name"></strong>
+  </div>
+
   <!-- ===== BUCHEN ===== -->
-  <section id="viewBook">
+  <section id="v-buchen">
     <div id="bookFlash"></div>
-    <label class="lbl">Datum</label>
+    <label class="lbl" for="bookDate">Datum</label>
     <div class="datebox"><input class="txt" type="date" id="bookDate" /></div>
-    <label class="lbl">Trinkgeld des Tages</label>
+    <label class="lbl" for="tip">Trinkgeld des Tages</label>
     <div class="tipbox"><span class="cur">CHF</span><input id="tip" inputmode="decimal" placeholder="0.00" /></div>
-    <button class="toggle on" id="deptToggle"><span id="deptLabel">Abteilung · 10%</span><span class="state" id="deptState">aktiv</span></button>
-    <div class="subhead">Wer hat gearbeitet?</div>
-    <div id="pickList"><p class="loading">Lädt …</p></div>
-    <button class="cta" id="bookBtn">Tag buchen</button>
+    <div id="buchenToepfe"><p class="loading">Lädt …</p></div>
+    <button class="cta" id="bookBtn" disabled>Tag buchen</button>
     <div class="hint" id="bookHint"></div>
   </section>
 
-  <!-- ===== TOPF ===== -->
-  <section id="viewPot" class="hidden">
-    <div class="pot"><div class="k">Im Topf</div><div class="v" id="potTotal">CHF 0.00</div></div>
-    <div class="subhead">Guthaben · Auszahlbetrag eingeben</div>
-    <div id="balList"></div>
-    <button class="cta" id="payBtn">Auszahlung buchen</button>
-    <div class="hint">Vorschlag = auf ganze Franken abgerundet. Frei editierbar; der Rest bleibt als Guthaben stehen.</div>
-
-    <!-- Abzug nach Arbeitstagen -->
-    <div class="abzug-box">
-      <div class="subhead">Abzug nach Arbeitstagen</div>
-      <p class="hint" style="text-align:left; margin:0 0 12px;">Ein Betrag wird auf alle verteilt, die im Zeitraum Trinkgeld bekommen haben – anteilmässig nach Anzahl Tage. Guthaben dürfen dabei ins Minus gehen.</p>
-      <div class="abzug-row">
-        <div><label class="lbl">Von</label><input class="txt" type="date" id="abzVon"></div>
-        <div><label class="lbl">Bis</label><input class="txt" type="date" id="abzBis"></div>
-      </div>
-      <label class="lbl">Betrag</label>
-      <div class="tipbox small"><span class="cur">CHF</span><input id="abzBetrag" inputmode="decimal" placeholder="0.00" /></div>
-      <label class="lbl">Bezeichnung</label>
-      <input class="txt" id="abzText" maxlength="80" placeholder="z.B. Kassendifferenz Woche 43" style="margin-bottom:14px;">
-      <div id="abzVorschau"></div>
-      <button class="cta" id="abzBtn" disabled>Abzug buchen</button>
-    </div>
+  <!-- ===== GUTHABEN ===== -->
+  <section id="v-guthaben" class="hidden">
+    <label class="lbl" for="payDate">Datum der Auszahlung</label>
+    <div class="datebox"><input class="txt" type="date" id="payDate" /></div>
+    <div id="guthabenToepfe"></div>
+    <p class="hint">Vorschlag = auf ganze Franken abgerundet. Frei änderbar; der Rest bleibt als Guthaben stehen.</p>
   </section>
 
-  <!-- ===== TEAM ===== -->
-  <section id="viewTeam" class="hidden">
-    <div class="row-add"><input class="txt" id="newName" placeholder="Name eingeben" /><button class="iconbtn" id="addBtn" aria-label="Hinzufügen"><i data-icon="plus"></i></button></div>
-    <div id="empList"></div>
-    <div class="deptbox">
-      <div class="cap">Abteilung (fixer Anteil)</div>
-      <div class="deptrow">
-        <input class="txt" id="deptName" />
-        <div class="pct"><input id="deptPct" type="number" min="0" max="100" /><span>%</span></div>
+  <!-- ===== PERSONEN ===== -->
+  <section id="v-personen" class="hidden">
+    <div class="card">
+      <div class="subhead" id="pForm-titel">Neue Person</div>
+      <label class="lbl" for="pName">Name</label>
+      <input class="txt" id="pName" maxlength="60" style="margin-bottom:12px;">
+      <div class="row2">
+        <div><label class="lbl" for="pTopf">Topf</label><select class="txt" id="pTopf"></select></div>
+        <div id="pStellenFeld"><label class="lbl" for="pStellen">Stellenprozent</label><input class="txt" id="pStellen" type="number" min="0" max="100" value="100"></div>
+      </div>
+      <p class="form-err" id="pErr"></p>
+      <div style="display:flex; gap:8px;">
+        <button class="cta sec hidden" id="pAbbrechen" style="margin-top:0;">Abbrechen</button>
+        <button class="cta" id="pSpeichern" style="margin-top:0;">Person hinzufügen</button>
       </div>
     </div>
+    <div id="personenListe"></div>
   </section>
 
   <!-- ===== VERLAUF ===== -->
-  <section id="viewLog" class="hidden"><div id="logList"></div></section>
+  <section id="v-verlauf" class="hidden"><div id="logList"></div></section>
+
+  <!-- ===== EINSTELLUNGEN ===== -->
+  <section id="v-einst" class="hidden">
+    <div class="card">
+      <div class="subhead">Standorte</div>
+      <div id="standorteListe"></div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <input class="txt" id="sName" maxlength="60" placeholder="Neuer Standort, z.B. Kandergrund">
+        <button class="cta" id="sSpeichern" style="margin-top:0; width:auto; padding:0 18px;">Anlegen</button>
+      </div>
+      <p class="form-err" id="sErr" style="margin-top:8px;"></p>
+    </div>
+
+    <div class="card">
+      <div class="subhead">Töpfe – <span id="tStandort"></span></div>
+      <div id="toepfeListe"></div>
+      <div class="summe" id="tSumme"></div>
+      <div class="subhead" id="tForm-titel" style="margin-top:14px;">Neuer Topf</div>
+      <div class="row2">
+        <div><label class="lbl" for="tName">Name</label><input class="txt" id="tName" maxlength="60" placeholder="z.B. TeaRoom & Laden"></div>
+        <div><label class="lbl" for="tProzent">Anteil in %</label><input class="txt" id="tProzent" type="number" min="0" max="100"></div>
+      </div>
+      <label class="lbl">Verteilung im Topf</label>
+      <div class="seg" id="tArt" style="margin-bottom:12px;">
+        <button type="button" data-art="anwahl" class="on">Wer gearbeitet hat</button>
+        <button type="button" data-art="stellen">Nach Stellenprozent</button>
+      </div>
+      <p class="form-err" id="tErr"></p>
+      <div style="display:flex; gap:8px;">
+        <button class="cta sec hidden" id="tAbbrechen" style="margin-top:0;">Abbrechen</button>
+        <button class="cta" id="tSpeichern" style="margin-top:0;">Topf anlegen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="subhead">Zugänge (Anmeldung)</div>
+      <label class="lbl" for="zName">Name</label><input class="txt" id="zName" maxlength="60" placeholder="z.B. Kandergrund" style="margin-bottom:10px;">
+      <label class="lbl" for="zEmail">E-Mail</label><input class="txt" id="zEmail" type="email" autocomplete="off" style="margin-bottom:10px;">
+      <label class="lbl" for="zPass">Temporäres Passwort (mind. 8 Zeichen)</label><input class="txt" id="zPass" autocomplete="off" style="margin-bottom:10px;">
+      <div class="row2">
+        <div><label class="lbl" for="zRolle">Rolle</label><select class="txt" id="zRolle"><option value="standort">Standort</option><option value="admin">Admin</option></select></div>
+        <div id="zStandortFeld"><label class="lbl" for="zStandort">Standort</label><select class="txt" id="zStandort"></select></div>
+      </div>
+      <p class="hint left" style="margin-top:-4px;">Standort: nur Tagestrinkgeld des eigenen Standorts buchen. Admin: alles. Beim ersten Anmelden muss das Passwort geändert werden.</p>
+      <p class="form-err" id="zErr"></p>
+      <button class="cta" id="zSpeichern"><i data-icon="user-plus" data-size="16"></i> Zugang erstellen</button>
+      <div id="zugaengeListe" style="margin-top:14px;"></div>
+    </div>
+  </section>
 </div>
 
 <div class="toast" id="toast"></div>
